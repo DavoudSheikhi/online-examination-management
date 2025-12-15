@@ -13,16 +13,26 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class User extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 5)
     private Long id;
+    @Column(nullable = false)
     private String fullName;
-    private Integer age;
+    @Column(nullable = false)
     private String phoneNumber;
+    @Column(nullable = false)
+    private Integer age;
 
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "user")
-    private UserAccount userAccount;
+    @Column(nullable = false, unique = true)
+    private String username;
+    @Column(nullable = false)
+    private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
 }
