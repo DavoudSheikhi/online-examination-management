@@ -2,12 +2,11 @@ package ir.intellij.onlineexaminationmanagement.model;
 
 import jakarta.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
+@SuperBuilder
 @Table(name = "users")
 @Getter
 @Setter
