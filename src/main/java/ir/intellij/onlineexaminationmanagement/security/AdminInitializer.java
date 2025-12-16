@@ -1,11 +1,13 @@
 package ir.intellij.onlineexaminationmanagement.security;
 
 import ir.intellij.onlineexaminationmanagement.model.Role;
+import ir.intellij.onlineexaminationmanagement.model.Student;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 public class AdminInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -23,15 +27,14 @@ public class AdminInitializer implements CommandLineRunner {
             userRepository.deleteAll(managers);
         }
 
-        User manager = User.builder()
-                .fullName("Manager")
-                .age(45)
-                .phoneNumber("09101234567")
-                .username("Admin")
-                .password("{noop}admin")
-                .role(Role.MANAGER)
-                .userStatus(UserStatus.APPROVED)
-                .build();
+        User manager = new User(
+                "Manager",
+                "09101234567",
+                45,
+                "admin",
+                passwordEncoder.encode("0000"),
+                Role.MANAGER,
+                UserStatus.APPROVED);
 
         userRepository.save(manager);
     }
