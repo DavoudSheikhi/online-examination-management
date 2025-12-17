@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>خوش آمدید</title>
+</head>
+<body>
+
+<div th:if="${registerMessage}" style="margin-bottom:15px; color:green;">
+    <span th:text="${registerMessage}"></span>
+</div>
+
+<div th:if="${logoutMessage}" style="margin-bottom:15px; color:green;">
+    <span th:text="${logoutMessage}"></span>
+</div>
+
+<div th:if="${loginError}" style="margin-bottom:15px; color:red;">
+    <span th:text="${loginError}"></span>
+</div>
+
+<h2>ورود</h2>
+<form action="/login" method="post">
+    <div>
+        <label>نام کاربری:</label>
+        <input type="text" name="username" required>
+    </div>
+
+    <div>
+        <label>رمز عبور:</label>
+        <input type="password" name="password" required>
+    </div>
+
+    <div>
+        <button type="submit">ورود</button>
+    </div>
+</form>
+
+<hr>
+
+<h2>ثبت نام</h2>
+<form action="/register" method="post">
+
+    <div>
+        <label>نام و نام خانوادگی:</label>
+        <input type="text" name="fullName" required>
+    </div>
+
+    <div>
+        <label>شماره موبایل:</label>
+        <input type="text" name="phoneNumber" required>
+    </div>
+
+    <div>
+        <label>سن:</label>
+        <input type="number" name="age" required>
+    </div>
+
+    <div>
+        <label>نام کاربری:</label>
+        <input type="text" name="username" required>
+    </div>
+
+    <div>
+        <label>رمز عبور:</label>
+        <input type="password" name="password" required>
+    </div>
+
+    <div>
+        <label>نقش:</label>
+        <select name="role" required>
+            <option value="STUDENT">STUDENT</option>
+            <option value="TEACHER">TEACHER</option>
+        </select>
+    </div>
+
+    <div>
+        <button type="submit">ثبت نام</button>
+    </div>
+</form>
+
+</body>
+</html>
