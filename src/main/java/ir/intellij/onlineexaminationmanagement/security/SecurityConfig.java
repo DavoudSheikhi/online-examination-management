@@ -1,6 +1,5 @@
 package ir.intellij.onlineexaminationmanagement.security;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,17 +36,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/welcome", "/register").permitAll()
+                        .requestMatchers("/dashboard/**").hasRole("MANAGER")
+
 
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginPage("/welcome")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/login?loginError")
+                        .failureUrl("/welcome?loginError")
+                        .permitAll()
                 )
                 .csrf(c -> c.disable())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/welcome?logout")
                         .permitAll()
                 )
                 .userDetailsService(customUserDetailsService);

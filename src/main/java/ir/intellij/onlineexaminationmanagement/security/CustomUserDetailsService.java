@@ -2,6 +2,7 @@ package ir.intellij.onlineexaminationmanagement.security;
 
 import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
+import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username);
-        if (user == null) throw new UsernameNotFoundException(username + " not found");
+        if (user == null || user.getUserStatus() != UserStatus.APPROVED) throw new UsernameNotFoundException(username + " not found");
         return CustomUserDetails.builder()
                 .username(username)
                 .password(user.getPassword())
