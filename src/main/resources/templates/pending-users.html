@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Users</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f3f1e7;
+        }
+
+        .container-box {
+            margin-top: 60px;
+            max-width: 1000px;
+        }
+
+        .card {
+            border-radius: 18px;
+        }
+
+        th {
+            background: #3a6ea5;
+            color: white;
+        }
+
+        /* ---- BUTTON STYLING ---- */
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-action {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-details {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .btn-action:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container container-box">
+    <div class="card shadow p-4">
+
+        <!--        &lt;!&ndash; SUCCESS MESSAGE &ndash;&gt;-->
+        <!--        <div th:if="${deleteMessage != null}" class="alert alert-success">-->
+        <!--            <p th:text="${deleteMessage}"></p>-->
+        <!--        </div>-->
+
+        <h2 class="text-center mb-4">Pending Users</h2>
+
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Phone Number</th>
+                <th>Age</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>User Status</th>
+                <th style="width: 220px;">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="s : ${pendingUsers}">
+                <td th:text="${s.fullName}"></td>
+                <td th:text="${s.phoneNumber}"></td>
+                <td th:text="${s.age}"></td>
+                <td th:text="${s.username}"></td>
+                <td th:text="${s.role}"></td>
+                <td th:text="${s.status}"></td>
+
+                <td>
+                    <form th:action="@{/user/update-status}"
+                          method="post"
+                          class="d-flex gap-2 align-items-center">
+
+                        <!-- username -->
+                        <input type="hidden" name="username" th:value="${s.username}"/>
+
+                        <!-- APPROVE -->
+                        <label>
+                            <input type="radio" name="status" value="APPROVED" required>
+                            ✔️ Approve
+                        </label>
+
+                        <!-- REJECT -->
+                        <label>
+                            <input type="radio" name="status" value="REJECTED">
+                            ❌ Reject
+                        </label>
+
+                        <!-- SUBMIT -->
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            Submit
+                        </button>
+
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+
+        <div class="text-center mt-4">
+            <a class="btn btn-secondary px-4" th:href="@{/dashboard}">
+                ⬅ Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
