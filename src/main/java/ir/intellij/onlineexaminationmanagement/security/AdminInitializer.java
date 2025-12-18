@@ -1,7 +1,6 @@
 package ir.intellij.onlineexaminationmanagement.security;
 
 import ir.intellij.onlineexaminationmanagement.model.Role;
-import ir.intellij.onlineexaminationmanagement.model.Student;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;

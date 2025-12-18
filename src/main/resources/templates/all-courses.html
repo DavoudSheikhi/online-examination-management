@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>همه درس‌ها</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f3f1e7;
+        }
+
+        .container-box {
+            margin-top: 60px;
+            max-width: 900px;
+        }
+
+        .card {
+            border-radius: 18px;
+        }
+
+        th {
+            background: #3a6ea5;
+            color: white;
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        .btn-custom {
+            border-radius: 10px;
+            padding: 8px 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container container-box">
+
+    <!-- ADD COURSE -->
+    <div class="card shadow p-4 mb-5">
+        <h4 class="mb-4 text-center">➕ افزودن درس جدید</h4>
+
+        <form action="/course/add" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">عنوان درس</label>
+                <input type="text" class="form-control" name="title" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">تاریخ شروع</label>
+                <input type="date" class="form-control" name="startDate" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">تاریخ پایان</label>
+                <input type="date" class="form-control" name="endDate" required>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-custom">
+                    ➕ افزودن درس
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- COURSE LIST -->
+    <div class="card shadow p-4">
+        <h4 class="mb-4 text-center">📚 لیست درس‌ها</h4>
+
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+            <tr>
+                <th>عنوان</th>
+                <th>کد درس</th>
+                <th>تاریخ شروع</th>
+                <th>تاریخ پایان</th>
+                <th style="width: 200px;">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="course : ${courses}">
+                <td th:text="${course.title}"></td>
+                <td th:text="${course.courseCode}"></td>
+                <td th:text="${course.startDate}"></td>
+                <td th:text="${course.endDate}"></td>
+
+                <td>
+                    <div class="d-flex justify-content-center gap-2">
+
+                        <!-- EDIT -->
+                        <a th:href="@{/course/edit/{code}(code=${course.courseCode})}"
+                           class="btn btn-sm btn-warning">
+                            ✏ Edit
+                        </a>
+
+                        <!-- DELETE -->
+                        <form th:action="@{/course/delete/{code}(code=${course.courseCode})}"
+                              method="post"
+                              onsubmit="return confirm('آیا از حذف این درس مطمئن هستید؟');">
+
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                🗑 Delete
+                            </button>
+                        </form>
+
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+
+        <div class="text-center mt-4">
+            <a href="/dashboard" class="btn btn-secondary btn-custom">
+                ⬅ بازگشت به داشبورد
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

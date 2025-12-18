@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ویرایش درس</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f3f1e7;
+        }
+
+        .container-box {
+            margin-top: 60px;
+            max-width: 600px;
+        }
+
+        .card {
+            border-radius: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container container-box">
+    <div class="card shadow p-4">
+
+        <h4 class="text-center mb-4">✏️ ویرایش درس</h4>
+
+        <form th:action="@{/course/edit/{code}(code=${responseDto.courseCode})}"
+              method="post">
+
+            <!-- TITLE -->
+            <div class="mb-3">
+                <label class="form-label">عنوان درس</label>
+                <input type="text"
+                       class="form-control"
+                       name="title"
+                       th:value="${responseDto.title}"
+                       required>
+            </div>
+
+            <!-- COURSE CODE (READONLY) -->
+            <div class="mb-3">
+                <label class="form-label">کد درس</label>
+                <input type="text"
+                       class="form-control"
+                       th:value="${responseDto.courseCode}"
+                       readonly>
+            </div>
+
+            <!-- START DATE -->
+            <div class="mb-3">
+                <label class="form-label">تاریخ شروع</label>
+                <input type="date"
+                       class="form-control"
+                       name="startDate"
+                       th:value="${responseDto.startDate}"
+                       required>
+            </div>
+
+            <!-- END DATE -->
+            <div class="mb-4">
+                <label class="form-label">تاریخ پایان</label>
+                <input type="date"
+                       class="form-control"
+                       name="endDate"
+                       th:value="${responseDto.endDate}"
+                       required>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="/course/all-courses" class="btn btn-secondary">
+                    ⬅ بازگشت
+                </a>
+
+                <button type="submit" class="btn btn-warning">
+                    💾 ذخیره تغییرات
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>
