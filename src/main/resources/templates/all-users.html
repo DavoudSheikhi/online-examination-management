@@ -60,6 +60,63 @@
 
 <div class="container container-box">
     <div class="card shadow p-4">
+
+        <form method="get" th:action="@{/user/search}" class="row g-2 mb-4">
+
+            <!-- Full Name -->
+            <div class="col-md-3">
+                <input type="text" name="fullName"
+                       class="form-control"
+                       placeholder="Name starts with">
+            </div>
+
+            <!-- Username -->
+            <div class="col-md-2">
+                <input type="text" name="username"
+                       class="form-control"
+                       placeholder="Username">
+            </div>
+
+            <!-- Phone -->
+            <div class="col-md-2">
+                <input type="text" name="phoneNumber"
+                       class="form-control"
+                       placeholder="Phone">
+            </div>
+
+            <!-- Age -->
+            <div class="col-md-1">
+                <input type="number" name="age"
+                       class="form-control"
+                       placeholder="Age">
+            </div>
+
+            <!-- Role -->
+            <div class="col-md-2">
+                <select name="role" class="form-select">
+                    <option value="">All Roles</option>
+                    <option value="STUDENT">Student</option>
+                    <option value="TEACHER">Teacher</option>
+                </select>
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="REJECTED">Rejected</option>
+                </select>
+            </div>
+
+            <!-- Submit -->
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100">Search</button>
+            </div>
+
+        </form>
+
         <div th:if="${updateMessage}" style="margin-bottom:15px; color:green;">
             <span th:text="${updateMessage}"></span>
         </div>

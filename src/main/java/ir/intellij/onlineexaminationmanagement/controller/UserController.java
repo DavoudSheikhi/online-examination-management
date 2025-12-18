@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class UserController {
         User user = userService.findByUsername(username);
         user.setUserStatus(UserStatus.valueOf(status));
         userService.save(user);
-        return "pending-users";
+        return "redirect:/dashboard/pending-users";
     }
 
     @GetMapping("/edit/{username}")
@@ -56,5 +58,34 @@ public class UserController {
         userService.delete(user);
         redirectAttributes.addFlashAttribute("deleteMessage", user.getUsername() + " deleted successfully");
         return "redirect:/dashboard/all-users";
+    }
+
+    @GetMapping("/search")
+    public String search(@RequestParam(required = false) String fullName,
+                         @RequestParam(required = false) String username,
+                         @RequestParam(required = false) String phoneNumber,
+                         @RequestParam(required = false) Integer age,
+                         @RequestParam(required = false) String role,
+                         @RequestParam(required = false) String status,
+                         Model model) {
+        Role enumRole;
+        if (role == null || role.isBlank()) {
+            enumRole = null;
+        } else {
+            enumRole = Role.valueOf(role.toUpperCase());
+        }
+
+        UserStatus enumStatus;
+        if (status == null || status.isBlank()) {
+            enumStatus = null;
+        } else {
+            enumStatus = UserStatus.valueOf(status.toUpperCase());
+        }
+
+        List<User> searchList = userService.search(fullName, username, phoneNumber, age, enumRole, enumStatus);
+        List<UserResponseDto> responseDtoList = userService.entityListToResponseList(searchList);
+        model.addAttribute("users", responseDtoList);
+        return "searched-users";
+
     }
 }

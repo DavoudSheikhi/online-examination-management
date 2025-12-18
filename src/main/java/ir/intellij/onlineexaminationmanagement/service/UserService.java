@@ -2,6 +2,7 @@ package ir.intellij.onlineexaminationmanagement.service;
 
 import ir.intellij.onlineexaminationmanagement.dto.UserRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 
@@ -24,4 +25,11 @@ public interface UserService {
     List<User> findAll();
 
     void delete(User user);
+
+    List<User> search(String fullName,
+                      String username,
+                      String phone,
+                      Integer age,
+                      Role role,
+                      UserStatus status);
 }
