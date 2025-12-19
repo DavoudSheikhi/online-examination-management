@@ -97,10 +97,16 @@
                 <td>
                     <div class="d-flex justify-content-center gap-2">
 
+                        <!-- ADD TEACHER -->
+                        <a th:href="@{/course/info/{code}(code=${course.courseCode})}"
+                           class="btn btn-sm btn-primary">
+                          اطلاعات درس 📝
+                        </a>
+
                         <!-- EDIT -->
                         <a th:href="@{/course/edit/{code}(code=${course.courseCode})}"
                            class="btn btn-sm btn-warning">
-                            ✏ Edit
+                            ✏ ویرایش
                         </a>
 
                         <!-- DELETE -->
@@ -109,7 +115,7 @@
                               onsubmit="return confirm('آیا از حذف این درس مطمئن هستید؟');">
 
                             <button type="submit" class="btn btn-sm btn-danger">
-                                🗑 Delete
+                                🗑 حذف
                             </button>
                         </form>
 

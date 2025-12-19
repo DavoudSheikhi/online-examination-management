@@ -4,6 +4,7 @@ import ir.intellij.onlineexaminationmanagement.dto.CourseRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.CourseResponseDto;
 import ir.intellij.onlineexaminationmanagement.mapper.CourseMapper;
 import ir.intellij.onlineexaminationmanagement.model.Course;
+import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -57,5 +58,31 @@ public class CourseController {
         return "redirect:/course/all-courses";
     }
 
+    @GetMapping("/info/{courseCode}")
+    public String courseInfo(@PathVariable String courseCode,
+                             Model model) {
+        Course byCourseCode = courseService.findByCourseCode(courseCode);
+//ToDo ( need dto)
+        model.addAttribute("course", byCourseCode);
+        return "course-info";
+    }
 
+    @GetMapping("/{courseCode}/assign-teacher")
+    public String assignTeacher(@PathVariable String courseCode,
+                                Model model) {
+        Course byCourseCode = courseService.findByCourseCode(courseCode);
+        List<User> allTeachers = courseService.findAllApprovedTeachers();
+        model.addAttribute("course", byCourseCode);
+        model.addAttribute("allTeachers", allTeachers);
+        return "select-teacher";
+    }
+
+    @PostMapping("/{courseCode}/assign-teacher")
+    public String assignTeacherSubmit(@PathVariable String courseCode,
+                                      @RequestParam String username) {
+
+//        courseService.assignTeacher(courseCode, username);
+
+        return "redirect:/course/info/" + courseCode;
+    }
 }

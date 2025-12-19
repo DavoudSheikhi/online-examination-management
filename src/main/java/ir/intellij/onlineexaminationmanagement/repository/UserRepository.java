@@ -34,4 +34,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("role") Role role,
             @Param("status") UserStatus status
     );
+
+    List<User> findUsersByRoleAndUserStatus(Role role, UserStatus status);
 }

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>اطلاعات درس</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f3f1e7;
+    }
+
+    .container-box {
+      margin-top: 60px;
+      max-width: 700px;
+    }
+
+    .card {
+      border-radius: 18px;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container container-box">
+  <div class="card shadow p-4">
+
+    <h4 class="mb-4 text-center">📘 اطلاعات درس</h4>
+
+    <div class="mb-2">
+      <span class="label">عنوان درس:</span>
+      <span th:text="${course.title}"></span>
+    </div>
+
+    <div class="mb-2">
+      <span class="label">کد درس:</span>
+      <span th:text="${course.courseCode}"></span>
+    </div>
+
+    <div class="mb-2">
+      <span class="label">تاریخ شروع:</span>
+      <span th:text="${course.startDate}"></span>
+    </div>
+
+    <div class="mb-2">
+      <span class="label">تاریخ پایان:</span>
+      <span th:text="${course.endDate}"></span>
+    </div>
+
+    <div class="mb-3">
+      <span class="label">استاد:</span>
+      <span th:if="${course.teacher != null}"
+            th:text="${course.teacher.username}"></span>
+      <span th:if="${course.teacher == null}" class="text-muted">
+                بدون استاد
+            </span>
+    </div>
+
+    <hr>
+
+    <!-- ACTION BUTTONS -->
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+
+      <!-- ADD / CHANGE TEACHER -->
+      <a th:href="@{/course/{code}/assign-teacher(code=${course.courseCode})}"
+         class="btn btn-primary btn-sm">
+        👨‍🏫 افزودن / تغییر استاد
+      </a>
+
+      <!-- REMOVE TEACHER -->
+      <form th:action="@{/course/{code}/remove-teacher(code=${course.courseCode})}"
+            method="post"
+            onsubmit="return confirm('استاد از این درس حذف شود؟');">
+
+        <button class="btn btn-danger btn-sm">
+          ❌ حذف استاد
+        </button>
+      </form>
+
+      <!-- ADD STUDENT -->
+      <a th:href="@{/course/{code}/add-student(code=${course.courseCode})}"
+         class="btn btn-success btn-sm">
+        👨‍🎓 افزودن دانشجو
+      </a>
+
+      <!-- REMOVE STUDENT -->
+      <a th:href="@{/course/{code}/students(code=${course.courseCode})}"
+         class="btn btn-warning btn-sm">
+        👥 مدیریت دانشجوها
+      </a>
+
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/course/all-courses" class="btn btn-secondary">
+        ⬅ بازگشت
+      </a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

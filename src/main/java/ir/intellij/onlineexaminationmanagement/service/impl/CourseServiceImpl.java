@@ -4,19 +4,23 @@ import ir.intellij.onlineexaminationmanagement.dto.CourseRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.CourseResponseDto;
 import ir.intellij.onlineexaminationmanagement.mapper.CourseMapper;
 import ir.intellij.onlineexaminationmanagement.model.Course;
+import ir.intellij.onlineexaminationmanagement.model.Role;
+import ir.intellij.onlineexaminationmanagement.model.User;
+import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.repository.CourseRepository;
+import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
 
     public static String generateCourseCode(String title) {
 //        String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
@@ -69,4 +73,15 @@ public class CourseServiceImpl implements CourseService {
             courseRepository.save(byCourseCode);
         }
     }
+
+    @Override
+    public List<User> findAllApprovedTeachers() {
+        return userRepository.findUsersByRoleAndUserStatus(Role.TEACHER, UserStatus.APPROVED);
+    }
+
+//    @Override
+//    public void assignTeacher(String courseCode, String username) {
+//        Course byCourseCode = courseRepository.findByCourseCode(courseCode);
+//        userRepository.findByUsername(username);
+//    }
 }
