@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>دانشجوهای ثبت‌نام شده</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f3f1e7;
+    }
+
+    .container-box {
+      margin-top: 60px;
+      max-width: 900px;
+    }
+
+    th {
+      background-color: #3a6ea5;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container container-box">
+  <div class="card shadow p-4">
+
+    <h4 class="text-center mb-3">
+      👨‍🎓 دانشجوهای ثبت‌نام شده
+    </h4>
+
+    <!-- پیام موفقیت حذف -->
+    <div th:if="${removeSuccess}" class="text-center mb-3" style="color:green;">
+      دانشجو با موفقیت از درس حذف شد
+    </div>
+
+    <p class="text-center text-muted mb-4">
+      <strong th:text="${course.title}"></strong>
+      (<span th:text="${course.courseCode}"></span>)
+    </p>
+
+    <!-- جدول -->
+    <table th:if="${!#lists.isEmpty(enrolledStudents)}"
+           class="table table-bordered table-hover table-striped text-center align-middle">
+
+      <thead>
+      <tr>
+        <th>Username</th>
+        <th>Full Name</th>
+        <th style="width: 180px;">Action</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr th:each="s : ${enrolledStudents}">
+        <td th:text="${s.username}"></td>
+        <td th:text="${s.fullName}"></td>
+
+        <td>
+          <form th:action="@{/course/{code}/remove-student(code=${course.courseCode})}"
+                method="post">
+
+            <input type="hidden" name="username" th:value="${s.username}"/>
+
+            <button type="submit"
+                    class="btn btn-sm btn-danger"
+                    onclick="return confirm('آیا این دانشجو از درس حذف شود؟');">
+              🗑 حذف از درس
+            </button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- اگر دانشجویی ثبت ‌نام نکرده -->
+    <div th:if="${#lists.isEmpty(enrolledStudents)}"
+         class="alert alert-warning text-center">
+      هنوز هیچ دانشجویی در این درس ثبت ‌نام نشده است
+    </div>
+
+    <!-- دکمه بازگشت -->
+    <div class="text-center mt-4">
+      <a th:href="@{/course/info/{code}(code=${course.courseCode})}"
+         class="btn btn-secondary px-4">
+        ⬅ بازگشت به اطلاعات درس
+      </a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

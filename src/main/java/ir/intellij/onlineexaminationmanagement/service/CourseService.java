@@ -22,7 +22,11 @@ public interface CourseService {
 
     void updateCourse(String courseCode, CourseRequestDto dto);
 
-    List<User> findAllApprovedTeachers();
+    void assignTeacher(String courseCode, String username);
 
-//    void assignTeacher(String courseCode, String username);
+    void deleteTeacherFromCourse(Course byCourseCode);
+
+    void addStudent(Course course, User user);
+
+    void removeStudent(Course course, User user);
 }

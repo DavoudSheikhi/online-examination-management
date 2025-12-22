@@ -36,4 +36,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
 
     List<User> findUsersByRoleAndUserStatus(Role role, UserStatus status);
+
+    @Query("""
+            select u
+            from User u
+            where u.role = :role
+              and u.userStatus = :status
+              and u not in (
+                  select e
+                  from Course c
+                  join c.enrolledStudents e
+                  where c.courseCode = :courseCode
+              )
+            """)
+    List<User> findEligibleStudents(
+            @Param("courseCode") String courseCode,
+            @Param("role") Role role,
+            @Param("status") UserStatus status
+    );
 }

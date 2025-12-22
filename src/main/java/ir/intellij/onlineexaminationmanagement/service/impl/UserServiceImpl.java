@@ -69,4 +69,14 @@ public class UserServiceImpl implements UserService {
     public List<User> search(String fullName, String username, String phone, Integer age, Role role, UserStatus status) {
         return userRepository.searchUsers(fullName, username, phone, age, role, status);
     }
+
+    @Override
+    public List<User> findAllApprovedTeachers() {
+        return userRepository.findUsersByRoleAndUserStatus(Role.TEACHER, UserStatus.APPROVED);
+    }
+
+    @Override
+    public List<User> findEligibleStudents(String courseCode, Role role, UserStatus status) {
+        return userRepository.findEligibleStudents(courseCode, role, status);
+    }
 }

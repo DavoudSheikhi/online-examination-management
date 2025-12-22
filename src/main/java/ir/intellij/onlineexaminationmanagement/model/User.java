@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
-import java.util.Set;
-
 @Entity
 @Table(name = "users")
 //@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -35,12 +33,6 @@ public class User extends BaseModel {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
-
-    @OneToMany(mappedBy = "teacher")
-    private Set<Course> teacherCourses;
-
-    @ManyToMany(mappedBy = "students")
-    private Set<Course> studentCourses;
 
     public User(String fullName, String phoneNumber, Integer age, String username, String password, Role role, UserStatus userStatus) {
         this.fullName = fullName;

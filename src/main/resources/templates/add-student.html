@@ -2,7 +2,7 @@
 <html lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>انتخاب استاد</title>
+    <title>اضافه کردن دانشجو</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -30,8 +30,12 @@
     <div class="card shadow p-4">
 
         <h4 class="text-center mb-3">
-            👨‍🏫 انتخاب استاد برای درس
+            👨‍🏫 اضافه کردن دانشجو به درس
         </h4>
+
+        <div th:if="${addStudentSuccess}" style="margin-bottom:15px; color:green;">
+            <span th:text="${addStudentSuccess}"></span>
+        </div>
 
         <p class="text-center text-muted mb-4">
             <strong th:text="${course.title}"></strong>
@@ -48,20 +52,20 @@
             </thead>
 
             <tbody>
-            <tr th:each="t : ${allTeachers}">
+            <tr th:each="t : ${allStudents}">
                 <td th:text="${t.username}"></td>
                 <td th:text="${t.fullName}"></td>
 
                 <td>
-                    <form th:action="@{/course/{code}/assign-teacher(code=${course.courseCode})}"
+                    <form th:action="@{/course/{code}/add-student(code=${course.courseCode})}"
                           method="post">
 
                         <input type="hidden" name="username" th:value="${t.username}"/>
 
                         <button type="submit"
                                 class="btn btn-sm btn-success"
-                                onclick="return confirm('آیا این استاد برای درس ثبت شود؟');">
-                            ✔ ثبت استاد
+                                onclick="return confirm('آیا این دانشجو به درس اضافه شود؟');">
+                            ✔اضافه کردن دانشجو
                         </button>
                     </form>
                 </td>
@@ -69,10 +73,10 @@
             </tbody>
         </table>
 
-        <!-- اگر استادی باقی نمونده -->
-        <div th:if="${#lists.isEmpty(allTeachers)}"
+        <!-- اگر دانشجویی باقی نمونده -->
+        <div th:if="${#lists.isEmpty(allStudents)}"
              class="alert alert-warning text-center">
-            هیچ استاد جدیدی برای انتخاب وجود ندارد
+            هیچ دانشجوی جدیدی برای انتخاب وجود ندارد
         </div>
 
         <div class="text-center mt-4">

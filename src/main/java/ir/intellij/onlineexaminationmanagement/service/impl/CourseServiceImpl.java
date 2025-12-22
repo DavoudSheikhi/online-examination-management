@@ -75,13 +75,28 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<User> findAllApprovedTeachers() {
-        return userRepository.findUsersByRoleAndUserStatus(Role.TEACHER, UserStatus.APPROVED);
+    public void assignTeacher(String courseCode, String username) {
+        Course byCourseCode = courseRepository.findByCourseCode(courseCode);
+        User byUsername = userRepository.findByUsername(username);
+        byCourseCode.setTeacher(byUsername);
+        courseRepository.save(byCourseCode);
     }
 
-//    @Override
-//    public void assignTeacher(String courseCode, String username) {
-//        Course byCourseCode = courseRepository.findByCourseCode(courseCode);
-//        userRepository.findByUsername(username);
-//    }
+    @Override
+    public void deleteTeacherFromCourse(Course course) {
+        course.setTeacher(null);
+        courseRepository.save(course);
+    }
+
+    @Override
+    public void addStudent(Course course, User user) {
+        course.getEnrolledStudents().add(user);
+        courseRepository.save(course);
+    }
+
+    @Override
+    public void removeStudent(Course course, User user) {
+        course.getEnrolledStudents().remove(user);
+        courseRepository.save(course);
+    }
 }

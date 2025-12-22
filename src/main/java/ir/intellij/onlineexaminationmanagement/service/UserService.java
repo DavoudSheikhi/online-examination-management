@@ -32,4 +32,10 @@ public interface UserService {
                       Integer age,
                       Role role,
                       UserStatus status);
+
+    List<User> findAllApprovedTeachers();
+
+    List<User> findEligibleStudents(String courseCode, Role role, UserStatus status);
 }
+
+

@@ -2,10 +2,12 @@ package ir.intellij.onlineexaminationmanagement.controller;
 
 import ir.intellij.onlineexaminationmanagement.dto.CourseRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.CourseResponseDto;
-import ir.intellij.onlineexaminationmanagement.mapper.CourseMapper;
 import ir.intellij.onlineexaminationmanagement.model.Course;
+import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
+import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
+import ir.intellij.onlineexaminationmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,12 +15,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/course")
 public class CourseController {
     private final CourseService courseService;
+    private final UserService userService;
 
 
     @GetMapping("/all-courses")
@@ -71,18 +75,80 @@ public class CourseController {
     public String assignTeacher(@PathVariable String courseCode,
                                 Model model) {
         Course byCourseCode = courseService.findByCourseCode(courseCode);
-        List<User> allTeachers = courseService.findAllApprovedTeachers();
+        List<User> allTeachers = userService.findAllApprovedTeachers();
         model.addAttribute("course", byCourseCode);
         model.addAttribute("allTeachers", allTeachers);
-        return "select-teacher";
+        return "assign-teacher";
     }
 
     @PostMapping("/{courseCode}/assign-teacher")
     public String assignTeacherSubmit(@PathVariable String courseCode,
                                       @RequestParam String username) {
 
-//        courseService.assignTeacher(courseCode, username);
+        courseService.assignTeacher(courseCode, username);
 
         return "redirect:/course/info/" + courseCode;
+    }
+
+    @PostMapping("/{courseCode}/remove-teacher")
+    public String removeTeacher(@PathVariable String courseCode,
+                                Model model) {
+        Course byCourseCode = courseService.findByCourseCode(courseCode);
+        if (byCourseCode.getTeacher() == null) {
+            model.addAttribute("teacherIsEmpty", true);
+            model.addAttribute("course", byCourseCode);
+            return "course-info";
+        }
+        courseService.deleteTeacherFromCourse(byCourseCode);
+        Course findCourse = courseService.findByCourseCode(courseCode);
+        model.addAttribute("successDelete", true);
+        model.addAttribute("course", findCourse);
+        return "course-info";
+    }
+
+
+    @GetMapping("/{courseCode}/add-student")
+    public String addStudent(@PathVariable String courseCode,
+                             Model model) {
+        Course byCourseCode = courseService.findByCourseCode(courseCode);
+        List<User> allStudents = userService.findEligibleStudents(courseCode, Role.STUDENT, UserStatus.APPROVED);
+        model.addAttribute("course", byCourseCode);
+        model.addAttribute("allStudents", allStudents);
+        return "add-student";
+    }
+
+    @PostMapping("/{courseCode}/add-student")
+    public String addStudentSubmit(@PathVariable String courseCode,
+                                   @RequestParam String username,
+                                   RedirectAttributes redirectAttributes) {
+        Course byCourseCode = courseService.findByCourseCode(courseCode);
+        User byUsername = userService.findByUsername(username);
+        courseService.addStudent(byCourseCode, byUsername);
+
+        redirectAttributes.addFlashAttribute("addStudentSuccess", byUsername.getUsername() + " با موفقیت به درس اضافه گردید ");
+
+        return "redirect:/course/" + courseCode + "/add-student";
+    }
+
+    @GetMapping("{courseCode}/enrolled-students")
+    public String enrolledStudents(@PathVariable String courseCode,
+                                   Model model) {
+        Course byCourseCode = courseService.findByCourseCode(courseCode);
+        Set<User> enrolledStudents = byCourseCode.getEnrolledStudents();
+        model.addAttribute("course", byCourseCode);
+        model.addAttribute("enrolledStudents", enrolledStudents);
+        return "enrolled-students";
+    }
+
+    @PostMapping("/{courseCode}/remove-student")
+    public String removeStudent(@PathVariable String courseCode,
+                                @RequestParam String username,
+                                RedirectAttributes redirectAttributes) {
+        Course byCourseCode = courseService.findByCourseCode(courseCode);
+        User byUsername = userService.findByUsername(username);
+        courseService.removeStudent(byCourseCode, byUsername);
+        redirectAttributes.addFlashAttribute("removeSuccess", byUsername.getUsername() + " با موفقیت از درس مربوطه اضافه گردید ");
+
+        return "redirect:/course/" + courseCode + "/enrolled-students";
     }
 }

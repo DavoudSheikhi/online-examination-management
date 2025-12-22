@@ -35,5 +35,5 @@ public class Course extends BaseModel {
             name = "course_students",
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id"))
-    private Set<User> students;
+    private Set<User> enrolledStudents;
 }

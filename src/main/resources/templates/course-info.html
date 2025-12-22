@@ -35,6 +35,14 @@
 
     <h4 class="mb-4 text-center">📘 اطلاعات درس</h4>
 
+    <div th:if="${teacherIsEmpty}" style="margin-bottom:15px; color:red;">
+      <span>هنوز استادی برای این درس انتخاب نشده است</span>
+    </div>
+
+    <div th:if="${successDelete}" style="margin-bottom:15px; color:green;">
+      <span>استاد از درس مربوطه حذف گردید</span>
+    </div>
+
     <div class="mb-2">
       <span class="label">عنوان درس:</span>
       <span th:text="${course.title}"></span>
@@ -91,8 +99,8 @@
         👨‍🎓 افزودن دانشجو
       </a>
 
-      <!-- REMOVE STUDENT -->
-      <a th:href="@{/course/{code}/students(code=${course.courseCode})}"
+      <!-- MANAGE STUDENTS -->
+      <a th:href="@{/course/{code}/enrolled-students(code=${course.courseCode})}"
          class="btn btn-warning btn-sm">
         👥 مدیریت دانشجوها
       </a>
