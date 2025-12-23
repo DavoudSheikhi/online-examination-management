@@ -30,7 +30,7 @@ public class Course extends BaseModel {
     @JoinColumn(name = "teacher_id")
     private User teacher;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "course_students",
             joinColumns = @JoinColumn(name = "course_id"),
