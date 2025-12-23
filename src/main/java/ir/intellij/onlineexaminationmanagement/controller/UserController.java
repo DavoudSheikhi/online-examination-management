@@ -1,9 +1,11 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
 import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.model.Course;
 import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
+import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,10 +21,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final CourseService courseService;
 
-    @PostMapping("/update-status")
-    public String updateStatus(@RequestParam("username") String username,
-                               @RequestParam("status") String status) {
+    @PostMapping("/update-pending-status")
+    public String updatePendingStatus(@RequestParam("username") String username,
+                                      @RequestParam("status") String status) {
         User user = userService.findByUsername(username);
         user.setUserStatus(UserStatus.valueOf(status));
         userService.save(user);
@@ -37,18 +40,39 @@ public class UserController {
         return "edit-user";
     }
 
-    @PostMapping("/update")
-    public String updateUser(@ModelAttribute UserResponseDto userResponseDto,
+    @PostMapping("/update-info")
+    public String updateUser(@RequestParam String username,
+                             @RequestParam String fullName,
+                             @RequestParam String phoneNumber,
+                             @RequestParam Integer age,
                              RedirectAttributes redirectAttributes) {
-        User user = userService.findByUsername(userResponseDto.getUsername());
-        user.setFullName(userResponseDto.getFullName());
-        user.setPhoneNumber(userResponseDto.getPhoneNumber());
-        user.setAge(userResponseDto.getAge());
-        user.setRole(Role.valueOf(userResponseDto.getRole()));
-        user.setUserStatus(UserStatus.valueOf(userResponseDto.getStatus()));
+        User user = userService.findByUsername(username);
+        user.setFullName(fullName);
+        user.setPhoneNumber(phoneNumber);
+        user.setAge(age);
         userService.save(user);
-        redirectAttributes.addFlashAttribute("updateMessage", user.getUsername() + " updated successfully");
-        return "redirect:/dashboard/all-users";
+        redirectAttributes.addFlashAttribute("updateInfoMessage", user.getUsername() + " updated successfully");
+        return "redirect:/user/edit/" + username;
+    }
+
+    @PostMapping("/update-role")
+    public String updateUserRole(@RequestParam String username,
+                                 @RequestParam String role,
+                                 RedirectAttributes redirectAttributes) {
+        userService.changeRole(username, Role.valueOf(role));
+
+        redirectAttributes.addFlashAttribute("updateRoleMessage", username + " role " + "successfully changed to " + role);
+        return "redirect:/user/edit/" + username;
+    }
+
+    @PostMapping("/update-status")
+    public String updateStatus(@RequestParam String username,
+                               @RequestParam String status,
+                               RedirectAttributes redirectAttributes) {
+        userService.changeStatus(username, status);
+
+        redirectAttributes.addFlashAttribute("updateStatusMessage", username + " status " + "successfully changed to " + status);
+        return "redirect:/user/edit/" + username;
     }
 
     @GetMapping("/delete/{username}")
@@ -56,6 +80,8 @@ public class UserController {
                          RedirectAttributes redirectAttributes) {
         User user = userService.findByUsername(username);
         userService.delete(user);
+
+
         redirectAttributes.addFlashAttribute("deleteMessage", user.getUsername() + " deleted successfully");
         return "redirect:/dashboard/all-users";
     }
