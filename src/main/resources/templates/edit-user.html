@@ -9,63 +9,118 @@
 
 <div class="container mt-5">
     <div class="card shadow p-4">
-        <h2 class="text-center mb-4">Edit User</h2>
 
-        <form th:action="@{/user/update}" th:object="${user}" method="post">
+        <h3 class="text-center mb-4">Edit User Profile</h3>
 
-            <!-- Full Name -->
+        <div th:if="${updateInfoMessage}" style="margin-bottom:15px; color:green;">
+            <span th:text="${updateInfoMessage}"></span>
+        </div>
+
+        <div th:if="${updateRoleMessage}" style="margin-bottom:15px; color:green;">
+            <span th:text="${updateRoleMessage}"></span>
+        </div>
+
+        <div th:if="${updateStatusMessage}" style="margin-bottom:15px; color:green;">
+            <span th:text="${updateStatusMessage}"></span>
+        </div>
+
+
+        <!-- ================= BASIC INFO ================= -->
+        <h5 class="mb-3 text-primary">Basic Information</h5>
+
+        <form th:action="@{/user/update-info}" th:object="${user}" method="post">
+
             <div class="mb-3">
-                <label for="fullName" class="form-label">Full Name</label>
-                <input type="text" th:field="*{fullName}" id="fullName" class="form-control" required>
+                <label class="form-label">Full Name</label>
+                <input type="text" th:field="*{fullName}" class="form-control" required>
             </div>
 
-            <!-- Phone Number -->
             <div class="mb-3">
-                <label for="phoneNumber" class="form-label">Phone Number</label>
-                <input type="text" th:field="*{phoneNumber}" id="phoneNumber" class="form-control" required>
+                <label class="form-label">Phone Number</label>
+                <input type="text" th:field="*{phoneNumber}" class="form-control" required>
             </div>
 
-            <!-- Age -->
             <div class="mb-3">
-                <label for="age" class="form-label">Age</label>
-                <input type="number" th:field="*{age}" id="age" class="form-control" required >
+                <label class="form-label">Age</label>
+                <input type="number" th:field="*{age}" class="form-control" required>
             </div>
 
-            <!-- Username -->
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" th:field="*{username}" id="username" class="form-control" readonly>
+                <label class="form-label">Username</label>
+                <input type="text" th:field="*{username}" class="form-control" readonly>
             </div>
 
-            <!-- Role (Radio Buttons) -->
+            <button type="submit" class="btn btn-primary">
+                💾 Update Info
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        <!-- ================= ROLE ================= -->
+        <h5 class="mb-3 text-warning">Change Role</h5>
+
+        <form th:action="@{/user/update-role}" method="post">
+
+            <input type="hidden" name="username" th:value="${user.username}"/>
+
             <div class="mb-3">
+                <p class="text-muted">
+                    Current Role: <strong th:text="${user.role}"></strong>
+                </p>
                 <label class="form-label">Role</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" th:field="*{role}" id="teacher" value="TEACHER" required>
-                    <label class="form-check-label" for="teacher">Teacher</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" th:field="*{role}" id="student" value="STUDENT" required>
-                    <label class="form-check-label" for="student">Student</label>
-                </div>
-            </div>
+                <select name="role" class="form-select" required>
+                    <option th:each="r : ${T(ir.intellij.onlineexaminationmanagement.model.Role).values()}"
+                            th:if="${r.name() != user.role}"
+                            th:value="${r}"
+                            th:text="${r}">
+                    </option>
 
-            <!-- Status (Dropdown from Enum) -->
-            <div class="mb-3">
-                <label for="status" class="form-label">Status</label>
-                <select th:field="*{status}" id="status" class="form-select" required>
-                    <option th:value="PENDING" th:text="'Pending'" th:selected="${user.status == 'PENDING'}"></option>
-                    <option th:value="APPROVED" th:text="'Approved'" th:selected="${user.status == 'APPROVED'}"></option>
-                    <option th:value="REJECTED" th:text="'Rejected'" th:selected="${user.status == 'REJECTED'}"></option>
                 </select>
             </div>
 
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary px-4">Update User</button>
-                <a th:href="@{/dashboard/all-users}" class="btn btn-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-warning"
+                    onclick="return confirm('کاربر از تمامی درسهایی که در آن عضو است حذف میشود، تایید میکنید؟')">
+                🔁 Update Role
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        <!-- ================= STATUS ================= -->
+        <h5 class="mb-3 text-success">Change User Status</h5>
+        <form th:action="@{/user/update-status}" method="post">
+
+            <input type="hidden" name="username" th:value="${user.username}"/>
+
+            <div class="mb-3">
+                <p class="text-muted">
+                    Current Status: <strong th:text="${user.status}"></strong>
+                </p>
+
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select" required>
+                    <option th:each="s : ${T(ir.intellij.onlineexaminationmanagement.model.UserStatus).values()}"
+                            th:if="${s.name() != user.status}"
+                            th:value="${s}"
+                            th:text="${s}">
+                    </option>
+
+                </select>
             </div>
 
+            <button type="submit" class="btn btn-success"
+                    onclick="return confirm('کاربر از تمامی درسهایی که در آن عضو است حذف میشود، تایید میکنید؟')">
+                ✔ Update Status
+            </button>
         </form>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/dashboard/all-users}" class="btn btn-secondary px-4">
+                ⬅ Back
+            </a>
+        </div>
+
     </div>
 </div>
 
