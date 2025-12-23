@@ -4,7 +4,6 @@ import ir.intellij.onlineexaminationmanagement.dto.CourseRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.CourseResponseDto;
 import ir.intellij.onlineexaminationmanagement.mapper.CourseMapper;
 import ir.intellij.onlineexaminationmanagement.model.Course;
-import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.repository.CourseRepository;
@@ -90,6 +89,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void addStudent(Course course, User user) {
+        if (user.getUserStatus() != UserStatus.APPROVED) {
+            throw new IllegalArgumentException("Only approved users can enroll");
+        }
         course.getEnrolledStudents().add(user);
         courseRepository.save(course);
     }
@@ -98,5 +100,10 @@ public class CourseServiceImpl implements CourseService {
     public void removeStudent(Course course, User user) {
         course.getEnrolledStudents().remove(user);
         courseRepository.save(course);
+    }
+
+    @Override
+    public List<Course> findCoursesByStudent(User user) {
+        return courseRepository.findCoursesByStudent(user);
     }
 }

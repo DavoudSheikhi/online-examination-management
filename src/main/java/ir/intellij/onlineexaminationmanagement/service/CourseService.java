@@ -29,4 +29,6 @@ public interface CourseService {
     void addStudent(Course course, User user);
 
     void removeStudent(Course course, User user);
+
+    List<Course> findCoursesByStudent(User user);
 }

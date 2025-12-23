@@ -3,16 +3,18 @@ package ir.intellij.onlineexaminationmanagement.service.impl;
 import ir.intellij.onlineexaminationmanagement.dto.UserRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
 import ir.intellij.onlineexaminationmanagement.mapper.UserMapper;
+import ir.intellij.onlineexaminationmanagement.model.Course;
 import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
+import ir.intellij.onlineexaminationmanagement.repository.CourseRepository;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,6 +22,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -61,7 +64,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void delete(User user) {
+        List<Course> coursesByStudent = courseRepository.findCoursesByStudent(user);
+        for (Course course : coursesByStudent) {
+            course.getEnrolledStudents().remove(user);
+        }
         userRepository.delete(user);
     }
 
@@ -78,5 +86,42 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findEligibleStudents(String courseCode, Role role, UserStatus status) {
         return userRepository.findEligibleStudents(courseCode, role, status);
+    }
+
+    @Override
+    @Transactional
+    public void changeRole(String username, Role role) {
+        User byUsername = userRepository.findByUsername(username);
+        deleteUserFromEnrolledCourses(byUsername);
+        byUsername.setRole(role);
+        userRepository.save(byUsername);
+    }
+
+    @Override
+    @Transactional
+    public void changeStatus(String username, String newStatus) {
+        User byUsername = userRepository.findByUsername(username);
+        if (byUsername.getUserStatus() == UserStatus.APPROVED) {
+            deleteUserFromEnrolledCourses(byUsername);
+        }
+        byUsername.setUserStatus(UserStatus.valueOf(newStatus));
+        userRepository.save(byUsername);
+    }
+
+    @Override
+    public void deleteUserFromEnrolledCourses(User byUsername) {
+        if (byUsername.getRole() == Role.STUDENT) {
+            List<Course> coursesByStudent = courseRepository.findCoursesByStudent(byUsername);
+            for (Course course : coursesByStudent) {
+                course.getEnrolledStudents().remove(byUsername);
+                courseRepository.save(course);
+            }
+        } else if (byUsername.getRole() == Role.TEACHER) {
+            List<Course> coursesByTeacher = courseRepository.findCoursesByTeacher(byUsername);
+            for (Course course : coursesByTeacher) {
+                course.setTeacher(null);
+                courseRepository.save(course);
+            }
+        }
     }
 }
