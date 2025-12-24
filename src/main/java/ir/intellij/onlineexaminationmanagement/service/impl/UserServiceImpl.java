@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -123,5 +124,19 @@ public class UserServiceImpl implements UserService {
                 courseRepository.save(course);
             }
         }
+    }
+
+    @Override
+    public List<User> findAllUsersInCourse(String courseCode) {
+        List<User> users = new ArrayList<>();
+
+        List<User> students = userRepository.findStudentsByCourseCode(courseCode);
+        users.addAll(students);
+
+        User teacher = userRepository.findTeacherByCourseCode(courseCode);
+        if (teacher != null) {
+            users.add(teacher);
+        }
+        return users;
     }
 }

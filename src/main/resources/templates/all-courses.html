@@ -97,7 +97,12 @@
                 <td>
                     <div class="d-flex justify-content-center gap-2">
 
-                        <!-- ADD TEACHER -->
+                        <a th:href="@{/course/users/{code}(code=${course.courseCode})}"
+                           class="btn btn-sm btn-primary">
+                            اعضای دوره 🧑‍🤝‍🧑
+                        </a>
+
+                        <!-- COURSE INFO -->
                         <a th:href="@{/course/info/{code}(code=${course.courseCode})}"
                            class="btn btn-sm btn-primary">
                           اطلاعات درس 📝

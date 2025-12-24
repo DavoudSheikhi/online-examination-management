@@ -43,6 +43,8 @@ public interface UserService {
     void changeStatus(String username, String newStatus);
 
     void deleteUserFromEnrolledCourses(User user);
+
+    List<User> findAllUsersInCourse(String courseCode);
 }
 
 

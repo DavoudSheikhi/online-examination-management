@@ -151,4 +151,13 @@ public class CourseController {
 
         return "redirect:/course/" + courseCode + "/enrolled-students";
     }
+
+    @GetMapping("/users/{courseCode}")
+    public String courseUsers(@PathVariable String courseCode, Model model) {
+        Course course = courseService.findByCourseCode(courseCode);
+        List<User> allUsersInCourse = userService.findAllUsersInCourse(courseCode);
+        model.addAttribute("course", course);
+        model.addAttribute("allUsersInCourse", allUsersInCourse);
+        return "course-users";
+    }
 }

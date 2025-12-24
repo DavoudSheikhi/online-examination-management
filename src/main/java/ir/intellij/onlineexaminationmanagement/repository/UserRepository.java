@@ -1,5 +1,6 @@
 package ir.intellij.onlineexaminationmanagement.repository;
 
+import ir.intellij.onlineexaminationmanagement.model.Course;
 import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
@@ -54,4 +55,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("role") Role role,
             @Param("status") UserStatus status
     );
+
+    @Query("""
+            select s
+            from Course c
+            join c.enrolledStudents s
+            where c.courseCode = :courseCode
+            """)
+    List<User> findStudentsByCourseCode(
+            @Param("courseCode") String courseCode);
+
+    @Query("""
+            select c.teacher
+            from Course c
+            where c.courseCode = :courseCode
+            """)
+    User findTeacherByCourseCode(
+            @Param("courseCode") String courseCode);
+
 }
