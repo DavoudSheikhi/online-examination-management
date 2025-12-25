@@ -103,7 +103,6 @@ public class CourseController {
             model.addAttribute("course", byCourseCode);
             return "course-info";
         }
-        examService.
         courseService.deleteTeacherFromCourse(byCourseCode);
         Course findCourse = courseService.findByCourseCode(courseCode);
         model.addAttribute("successDelete", true);
