@@ -22,7 +22,6 @@ public class CourseServiceImpl implements CourseService {
     private final UserRepository userRepository;
 
     public static String generateCourseCode(String title) {
-//        String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String random = RandomStringUtils.randomAlphanumeric(5).toUpperCase();
         return title + "-" + random;
     }
@@ -103,7 +102,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> findCoursesByStudent(User user) {
-        return courseRepository.findCoursesByStudent(user);
+    public List<Course> findCoursesByStudent(User student) {
+        return courseRepository.findCoursesByStudent(student);
+    }
+
+    @Override
+    public List<Course> findCoursesByTeacher(User teacher) {
+        return courseRepository.findCoursesByTeacher(teacher);
     }
 }

@@ -30,5 +30,7 @@ public interface CourseService {
 
     void removeStudent(Course course, User user);
 
-    List<Course> findCoursesByStudent(User user);
+    List<Course> findCoursesByStudent(User student);
+
+    List<Course> findCoursesByTeacher(User teacher);
 }

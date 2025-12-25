@@ -111,6 +111,20 @@
 
         </div>
 
+        <!-- دکمه فقط برای TEACHER -->
+        <div th:if="${user.role.name() == 'TEACHER'}">
+
+            <h4 class="mb-3">Dashboard</h4>
+
+            <div class="d-flex flex-column gap-3">
+                <a href="/teacher/courses" class="btn btn-blue btn-custom">
+                    📚 دوره‌های من
+                </a>
+            </div>
+
+        </div>
+
+
         <!-- LOGOUT -->
         <div class="mt-4 pt-3 border-top">
             <a href="/logout" class="btn btn-logout btn-custom w-100">

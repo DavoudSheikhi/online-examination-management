@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>آزمون‌های دوره</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        th, td {
+            border: 1px solid #aaa;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        form {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 6px;
+            max-width: 600px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 8px 14px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #43a047;
+        }
+    </style>
+</head>
+<body>
+
+<h2>
+    آزمون‌های دوره
+    <span th:text="${course.courseCode}"></span>
+</h2>
+<div th:if="${addNewExamSuccess}" class="alert alert-info text-center">
+    <span th:text="${addNewExamSuccess}"></span>
+</div>
+<div>
+    <a th:href="@{'/teacher/courses'}"
+       style="
+       display: inline-block;
+       margin: 10px 0;
+       padding: 6px 12px;
+       background-color: #777;
+       color: white;
+       text-decoration: none;
+       border-radius: 4px;
+   ">
+        ⬅ بازگشت
+    </a>
+</div>
+
+<div>
+    <a th:href="@{'/course/' + ${course.courseCode} + '/ownExams'}"
+       style="
+       display: inline-block;
+       margin: 10px 0;
+       padding: 6px 12px;
+       background-color: #777;
+       color: white;
+       text-decoration: none;
+       border-radius: 4px;
+   ">
+        آزمون های من
+    </a>
+</div>
+<!-- ✅ فرم افزودن آزمون -->
+<form th:action="@{'/course/' + ${course.courseCode} + '/exams/new'}"
+      method="post">
+
+    <h3>➕ افزودن آزمون جدید</h3>
+
+    <label>
+        عنوان آزمون
+        <input type="text" name="title" required>
+    </label>
+
+    <label>
+        توضیحات
+        <textarea name="description" rows="3" required></textarea>
+    </label>
+
+    <label>
+        مدت زمان (دقیقه)
+        <input type="number" name="durationInMinutes" min="1" required>
+    </label>
+
+    <label>
+        تاریخ شروع
+        <input type="date" name="startDate" required>
+    </label>
+
+    <button type="submit">ثبت آزمون</button>
+</form>
+
+<!-- 📋 جدول آزمون‌ها -->
+<table>
+    <thead>
+    <tr>
+        <th>کد آزمون</th>
+        <th>عنوان</th>
+        <th>تاریخ برگزاری</th>
+        <th>مدت زمان (دقیقه)</th>
+        <th>ایجادکننده</th>
+        <th>توضیحات</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="exam : ${exams}">
+        <td th:text="${exam.examCode}"></td>
+        <td th:text="${exam.title}"></td>
+        <td th:text="${exam.startDate}"></td>
+        <td th:text="${exam.durationInMinutes}"></td>
+        <td th:text="${exam.createdBy.fullName}"></td>
+        <td th:text="${exam.description}"></td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(exams)}">
+        <td colspan="6">هیچ آزمونی برای این درس ثبت نشده است</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

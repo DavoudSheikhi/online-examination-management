@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>آزمون‌های من</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #aaa;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        a.button {
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        a.button.edit {
+            background-color: #2196F3;
+        }
+
+        a.button.delete {
+            background-color: #f44336;
+        }
+
+        a.button.back {
+            background-color: #777;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .top-actions {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>
+    آزمون‌های من در درس
+    <span th:text="${course.courseCode}"></span>
+</h2>
+
+<div class="top-actions">
+    <a th:href="@{'/course/' + ${course.courseCode} + '/exams'}"
+       class="button back">
+        بازگشت
+    </a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>کد آزمون</th>
+        <th>عنوان</th>
+        <th>تاریخ برگزاری</th>
+        <th>مدت زمان (دقیقه)</th>
+        <th>توضیحات</th>
+        <th>عملیات</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="exam : ${ownExams}">
+        <td th:text="${exam.examCode}"></td>
+        <td th:text="${exam.title}"></td>
+        <td th:text="${exam.startDate}"></td>
+        <td th:text="${exam.durationInMinutes}"></td>
+        <td th:text="${exam.description}"></td>
+
+        <td>
+            <div class="actions">
+                <a th:href="@{'/course/' + ${course.courseCode} + '/exams/edit/' + ${exam.examCode}}"
+                   class="button edit">
+                    ویرایش
+                </a>
+
+                <a th:href="@{'/course/' + ${course.courseCode} + '/exams/delete/' + ${exam.examCode}}"
+                   class="button delete"
+                   onclick="return confirm('آیا از حذف این آزمون مطمئن هستید؟');">
+                    حذف
+                </a>
+            </div>
+        </td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(ownExams)}">
+        <td colspan="6">
+            شما هنوز آزمونی برای این درس ایجاد نکرده‌اید
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

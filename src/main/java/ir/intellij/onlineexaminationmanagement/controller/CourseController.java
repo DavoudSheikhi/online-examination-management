@@ -2,18 +2,21 @@ package ir.intellij.onlineexaminationmanagement.controller;
 
 import ir.intellij.onlineexaminationmanagement.dto.CourseRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.CourseResponseDto;
-import ir.intellij.onlineexaminationmanagement.model.Course;
-import ir.intellij.onlineexaminationmanagement.model.Role;
-import ir.intellij.onlineexaminationmanagement.model.User;
-import ir.intellij.onlineexaminationmanagement.model.UserStatus;
+import ir.intellij.onlineexaminationmanagement.model.*;
+import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
+import ir.intellij.onlineexaminationmanagement.service.ExamService;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
+import ir.intellij.onlineexaminationmanagement.service.impl.ExamServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +26,8 @@ import java.util.Set;
 public class CourseController {
     private final CourseService courseService;
     private final UserService userService;
+    private final ExamService examService;
+    private final ExamServiceImpl examServiceImpl;
 
 
     @GetMapping("/all-courses")
@@ -159,5 +164,53 @@ public class CourseController {
         model.addAttribute("course", course);
         model.addAttribute("allUsersInCourse", allUsersInCourse);
         return "course-users";
+    }
+
+    @GetMapping("/{courseCode}/exams")
+    public String courseExams(@PathVariable String courseCode, Model model) {
+        Course course = courseService.findByCourseCode(courseCode);
+        List<Exam> exams = examService.findByCourse(course);
+
+        model.addAttribute("exams", exams);
+        model.addAttribute("course", course);
+        return "course-exams";
+
+    }
+
+    @GetMapping("/{courseCode}/ownExams")
+    public String ownExams(@AuthenticationPrincipal CustomUserDetails teacher,
+                           @PathVariable String courseCode,
+                           Model model) {
+        Course course = courseService.findByCourseCode(courseCode);
+        List<Exam> ownExams = examService.findByCourseCodeAndUsername(courseCode, teacher.getUsername());
+
+        model.addAttribute("course", course);
+        model.addAttribute("ownExams", ownExams);
+        return "course-own-exams";
+
+    }
+
+    @PostMapping("/{courseCode}/exams/new")
+    public String addNewExam(@AuthenticationPrincipal CustomUserDetails teacher,
+                             @PathVariable String courseCode,
+                             @RequestParam String title,
+                             @RequestParam String description,
+                             @RequestParam String startDate,
+                             @RequestParam String durationInMinutes,
+                             RedirectAttributes redirectAttributes) {
+        User byUsername = userService.findByUsername(teacher.getUsername());
+        Course course = courseService.findByCourseCode(courseCode);
+        Exam exam = Exam.builder()
+                .title(title)
+                .description(description)
+                .startDate(LocalDate.parse(startDate))
+                .durationInMinutes(Integer.parseInt(durationInMinutes))
+                .course(course)
+                .createdBy(byUsername)
+                .build();
+
+        Exam savedExam = examService.save(exam);
+        redirectAttributes.addFlashAttribute("addNewExamSuccess", "the exam:" + exam.getExamCode() + " added successfully");
+        return "redirect:/course/" + courseCode + "/exams";
     }
 }
