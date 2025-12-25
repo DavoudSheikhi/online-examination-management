@@ -63,6 +63,10 @@
     <span th:text="${course.courseCode}"></span>
 </h2>
 
+<div th:if="${examEditSuccess}" class="alert alert-success text-center">
+    <span th:text="${examEditSuccess}"></span>
+</div>
+<br>
 <div class="top-actions">
     <a th:href="@{'/course/' + ${course.courseCode} + '/exams'}"
        class="button back">

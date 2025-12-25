@@ -13,4 +13,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
     List<Exam> findByCourseAndCreatedBy(Course course, User createdBy);
 
     List<Exam> findByCourse_CourseCodeAndCreatedBy_Username(String courseCode, String username);
+
+    Exam findByExamCode(String examCode);
 }

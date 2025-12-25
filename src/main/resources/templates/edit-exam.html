@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ویرایش آزمون</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        form {
+            max-width: 600px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+        }
+
+        input[readonly] {
+            background-color: #eee;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 8px 16px;
+            background-color: #2196F3;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #1e88e5;
+        }
+
+        a.back {
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<h2>
+    ✏️ ویرایش آزمون
+    <span th:text="${exam.examCode}"></span>
+</h2>
+
+<a th:href="@{'/course/' + ${course.courseCode} + '/ownExams'}" class="back">
+    ⬅ بازگشت
+</a>
+
+<form th:action="@{'/course/' + ${course.courseCode}
+                   + '/exams/edit/' + ${exam.examCode}}"
+      method="post">
+
+    <!-- 🔑 برای شناسایی آزمون -->
+    <input type="hidden" name="examCode"
+           th:value="${exam.examCode}"/>
+
+    <!-- غیرقابل ویرایش -->
+    <label>
+        کد آزمون
+        <input type="text"
+               th:value="${exam.examCode}"
+               readonly>
+    </label>
+
+    <label>
+        عنوان آزمون
+        <input type="text"
+               th:value="${exam.title}"
+               readonly>
+    </label>
+
+    <label>
+        ایجادکننده
+        <input type="text"
+               th:value="${exam.creatorUsername}"
+               readonly>
+    </label>
+
+    <!-- قابل ویرایش -->
+    <label>
+        تاریخ شروع
+        <input type="date"
+               name="startDate"
+        th:value="${exam.startDate}">
+    </label>
+
+    <label>
+        مدت زمان (دقیقه)
+        <input type="number"
+               name="durationInMinutes"
+               min="1"
+        th:value="${exam.durationInMinutes}">
+    </label>
+
+    <label>
+        توضیحات
+        <textarea name="description"
+                  rows="3"
+                  th:text="${exam.description}">
+        </textarea>
+    </label>
+
+    <button type="submit">💾 ذخیره تغییرات</button>
+</form>
+
+</body>
+</html>

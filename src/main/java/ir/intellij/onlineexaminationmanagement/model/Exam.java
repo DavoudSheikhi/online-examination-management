@@ -28,6 +28,8 @@ public class Exam extends BaseModel {
     @JoinColumn(name = "teacher_id")
     private User createdBy;
 
+    private String creatorUsername;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     private Course course;

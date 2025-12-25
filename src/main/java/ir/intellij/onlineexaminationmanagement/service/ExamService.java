@@ -11,4 +11,8 @@ public interface ExamService {
     List<Exam> findByCourseCodeAndUsername(String courseCode, String username);
 
     Exam save(Exam exam);
+
+    Exam findByExamCode(String examCode);
+
+    void delete(Exam exam);
 }

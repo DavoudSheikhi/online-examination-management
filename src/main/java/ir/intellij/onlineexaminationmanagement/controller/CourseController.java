@@ -15,7 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -104,6 +103,7 @@ public class CourseController {
             model.addAttribute("course", byCourseCode);
             return "course-info";
         }
+        examService.
         courseService.deleteTeacherFromCourse(byCourseCode);
         Course findCourse = courseService.findByCourseCode(courseCode);
         model.addAttribute("successDelete", true);
@@ -207,10 +207,13 @@ public class CourseController {
                 .durationInMinutes(Integer.parseInt(durationInMinutes))
                 .course(course)
                 .createdBy(byUsername)
+                .creatorUsername(byUsername.getUsername())
                 .build();
 
         Exam savedExam = examService.save(exam);
-        redirectAttributes.addFlashAttribute("addNewExamSuccess", "the exam:" + exam.getExamCode() + " added successfully");
+        redirectAttributes.addFlashAttribute("addNewExamSuccess", "the exam:" + savedExam.getExamCode() + " added successfully");
         return "redirect:/course/" + courseCode + "/exams";
     }
+
+
 }

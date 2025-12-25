@@ -39,4 +39,14 @@ public class ExamServiceImpl implements ExamService {
         exam.setExamCode(generateExamCode(exam.getTitle(), exam.getStartDate()));
         return examRepository.save(exam);
     }
+
+    @Override
+    public Exam findByExamCode(String examCode) {
+        return examRepository.findByExamCode(examCode);
+    }
+
+    @Override
+    public void delete(Exam exam) {
+        examRepository.delete(exam);
+    }
 }
