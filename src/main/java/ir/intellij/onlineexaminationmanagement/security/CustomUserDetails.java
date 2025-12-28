@@ -19,6 +19,7 @@ public class CustomUserDetails implements UserDetails {
     private String password;
     private Role role;
     private UserStatus userStatus;
+    private boolean isActive;
 
     @Override
     public boolean isAccountNonExpired() {
@@ -37,13 +38,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return (isActive() && userStatus == UserStatus.APPROVED);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
-
-
 }

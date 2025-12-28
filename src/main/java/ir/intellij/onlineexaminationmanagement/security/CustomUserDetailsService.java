@@ -1,6 +1,5 @@
 package ir.intellij.onlineexaminationmanagement.security;
 
-import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
@@ -21,14 +20,16 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         User user = userRepository.findByUsername(username);
-        if (user == null || user.getUserStatus() != UserStatus.APPROVED) throw new UsernameNotFoundException(username + " not found");
+        if (user == null) {
+            throw new UsernameNotFoundException("کاربر یافت نشد");
+        }
         return CustomUserDetails.builder()
                 .username(username)
                 .password(user.getPassword())
                 .role(user.getRole())
                 .userStatus(user.getUserStatus())
+                .isActive(user.isActive())
                 .build();
     }
 }

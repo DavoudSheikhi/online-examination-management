@@ -1,5 +1,6 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +13,16 @@ public class WelcomeController {
 
     @GetMapping
     public String welcome(@RequestParam(value = "logout", required = false) String logout,
-                          @RequestParam(value = "loginError", required = false) String login,
+                          HttpSession session,
                           Model model) {
         if (logout != null) {
             model.addAttribute("logoutMessage", "You are logged out");
         }
-        if (login != null) {
-            model.addAttribute("loginError", "username or password are incorrect");
+
+        Object loginError = session.getAttribute("loginError");
+        if (loginError != null) {
+            model.addAttribute("loginError", loginError);
+            session.removeAttribute("loginError");
         }
         return "welcome";
     }
