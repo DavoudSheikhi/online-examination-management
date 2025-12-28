@@ -26,7 +26,6 @@ public class CourseController {
     private final CourseService courseService;
     private final UserService userService;
     private final ExamService examService;
-    private final ExamServiceImpl examServiceImpl;
 
 
     @GetMapping("/all-courses")

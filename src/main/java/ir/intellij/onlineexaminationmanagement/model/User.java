@@ -3,15 +3,17 @@ package ir.intellij.onlineexaminationmanagement.model;
 import jakarta.persistence.*;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "users")
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
-//@DiscriminatorValue(value = "USER")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue(value = "USER")
 @Getter
 @Setter
 @NoArgsConstructor
+@SuperBuilder
 public class User extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
@@ -28,20 +30,13 @@ public class User extends BaseModel {
     private String username;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
-
-    public User(String fullName, String phoneNumber, Integer age, String username, String password, Role role, UserStatus userStatus) {
-        this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
-        this.age = age;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.userStatus = userStatus;
-    }
+    @Column(nullable = false)
+    boolean isActive = true;
 }
 

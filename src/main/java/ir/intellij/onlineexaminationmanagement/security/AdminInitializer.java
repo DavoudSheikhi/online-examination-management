@@ -23,15 +23,16 @@ public class AdminInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         List<User> managers = userRepository.findUserByRole(Role.MANAGER);
         if (managers.isEmpty()) {
-            User manager = new User(
-                    "Manager",
-                    "09101234567",
-                    45,
-                    "admin",
-                    passwordEncoder.encode("0000"),
-                    Role.MANAGER,
-                    UserStatus.APPROVED);
-
+            User manager = User.builder()
+                    .fullName("Manager")
+                    .phoneNumber("09101234567")
+                    .age(45)
+                    .username("admin")
+                    .password(passwordEncoder.encode("0000"))
+                    .role(Role.MANAGER)
+                    .userStatus(UserStatus.APPROVED)
+                    .isActive(true)
+                    .build();
             userRepository.save(manager);
         }
     }

@@ -13,13 +13,16 @@ import java.util.List;
 public class UserMapper {
 
     public static User reqDtoToEntity(UserRequestDto dto) {
-        return new User(dto.getFullName(),
-                dto.getPhoneNumber(),
-                dto.getAge(),
-                dto.getUsername(),
-                dto.getPassword(),
-                Role.valueOf(dto.getRole()),
-                UserStatus.PENDING);
+        return User.builder()
+                .fullName(dto.getFullName())
+                .phoneNumber(dto.getPhoneNumber())
+                .age(dto.getAge())
+                .username(dto.getUsername())
+                .password(dto.getPassword())
+                .role(Role.valueOf(dto.getRole()))
+                .userStatus(UserStatus.PENDING)
+                .isActive(true)
+                .build();
     }
 
     public static UserResponseDto entityToResponse(User user) {

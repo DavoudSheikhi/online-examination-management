@@ -2,6 +2,7 @@ package ir.intellij.onlineexaminationmanagement.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class Exam extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "exam_seq")

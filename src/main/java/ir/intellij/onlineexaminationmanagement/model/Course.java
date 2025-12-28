@@ -2,6 +2,7 @@ package ir.intellij.onlineexaminationmanagement.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 
 
 public class Course extends BaseModel {
@@ -26,11 +27,11 @@ public class Course extends BaseModel {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "teacher_id")
     private User teacher;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "course_students",
             joinColumns = @JoinColumn(name = "course_id"),

@@ -3,10 +3,14 @@ package ir.intellij.onlineexaminationmanagement.model;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
 @MappedSuperclass
+@SuperBuilder
+@NoArgsConstructor
 
 public class BaseModel {
 
