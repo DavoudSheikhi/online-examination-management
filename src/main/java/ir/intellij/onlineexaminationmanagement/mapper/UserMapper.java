@@ -1,31 +1,26 @@
 package ir.intellij.onlineexaminationmanagement.mapper;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRequestDto;
+import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
 import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
-import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
-import ir.intellij.onlineexaminationmanagement.model.UserStatus;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-public class UserMapper {
+    User toEntity(UserRegisterDTO dto);
 
-    public static User reqDtoToEntity(UserRequestDto dto) {
-        return User.builder()
-                .fullName(dto.getFullName())
-                .phoneNumber(dto.getPhoneNumber())
-                .age(dto.getAge())
-                .username(dto.getUsername())
-                .password(dto.getPassword())
-                .role(Role.valueOf(dto.getRole()))
-                .userStatus(UserStatus.PENDING)
-                .isActive(true)
-                .build();
-    }
+    void updateUser(UserRegisterDTO userRegisterDTO,
+                    @MappingTarget User user);
 
-    public static UserResponseDto entityToResponse(User user) {
+
+
+
+    static UserResponseDto entityToResponse(User user) {
 
         return new UserResponseDto(
                 user.getFullName(),
