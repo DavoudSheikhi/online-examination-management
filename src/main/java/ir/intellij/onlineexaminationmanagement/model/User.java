@@ -37,6 +37,6 @@ public class User extends BaseModel {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
     @Column(nullable = false)
-    boolean isActive = true;
+    private boolean isActive = true;
 }
 
