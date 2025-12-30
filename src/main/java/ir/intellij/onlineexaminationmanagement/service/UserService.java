@@ -1,11 +1,10 @@
 package ir.intellij.onlineexaminationmanagement.service;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRequestDto;
+import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
 import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
 import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
-
 import java.util.List;
 
 public interface UserService {
@@ -16,7 +15,9 @@ public interface UserService {
 
     UserResponseDto entityToResponseDto(User user);
 
-    UserResponseDto saveEntityFromDto(UserRequestDto userRequestDto);
+    User register(UserRegisterDTO registerDTO);
+
+//    UserResponseDto saveEntity(User user);
 
     List<User> findUsersByUserStatus(UserStatus userStatus);
 
@@ -45,6 +46,8 @@ public interface UserService {
     void deleteUserFromEnrolledCourses(User user);
 
     List<User> findAllUsersInCourse(String courseCode);
+
+
 }
 
 

@@ -1,12 +1,9 @@
 package ir.intellij.onlineexaminationmanagement.service.impl;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRequestDto;
+import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
 import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
 import ir.intellij.onlineexaminationmanagement.mapper.UserMapper;
-import ir.intellij.onlineexaminationmanagement.model.Course;
-import ir.intellij.onlineexaminationmanagement.model.Role;
-import ir.intellij.onlineexaminationmanagement.model.User;
-import ir.intellij.onlineexaminationmanagement.model.UserStatus;
+import ir.intellij.onlineexaminationmanagement.model.*;
 import ir.intellij.onlineexaminationmanagement.repository.CourseRepository;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
@@ -23,6 +20,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -42,12 +40,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto saveEntityFromDto(UserRequestDto userRequestDto) {
-        User user = UserMapper.reqDtoToEntity(userRequestDto);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
-        return UserMapper.entityToResponse(savedUser);
+    public User register(UserRegisterDTO registerDTO) {
+        User user;
+        if (registerDTO.role().equals("STUDENT")) {
+            Student student = new Student();
+            userMapper.updateUser(registerDTO, student);
+            student.setPassword(passwordEncoder.encode(registerDTO.password()));
+            student.setUserStatus(UserStatus.PENDING);
+            student.setActive(true);
+            user = student;
+        } else if (registerDTO.role().equals("TEACHER")) {
+            Teacher teacher = new Teacher();
+            userMapper.updateUser(registerDTO, teacher);
+            teacher.setPassword(passwordEncoder.encode(registerDTO.password()));
+            teacher.setUserStatus(UserStatus.PENDING);
+            teacher.setActive(true);
+            user = teacher;
+        } else {
+            throw new IllegalArgumentException("Role نامعتبر است: " + registerDTO.role());
+        }
+        return userRepository.save(user);
     }
+
+
+//    @Override
+//    public UserResponseDto saveEntity(User user) {
+//
+//
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        User savedUser = userRepository.save(user);
+//        return UserMapper.entityToResponse(savedUser);
+//    }
 
     @Override
     public List<User> findUsersByUserStatus(UserStatus userStatus) {

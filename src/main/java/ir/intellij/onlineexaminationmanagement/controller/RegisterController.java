@@ -1,8 +1,9 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRequestDto;
-import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
+import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,10 +18,11 @@ public class RegisterController {
     private final UserService userService;
 
     @PostMapping
-    public String register(@ModelAttribute UserRequestDto userRequestDto, RedirectAttributes redirectAttributes) {
-        UserResponseDto userResponseDto = userService.saveEntityFromDto(userRequestDto);
-        redirectAttributes.addFlashAttribute("registerMessage", userResponseDto.getUsername() + " registered successfully");
+    public String register(@Valid @ModelAttribute UserRegisterDTO userRegisterDto,
+                           RedirectAttributes redirectAttributes) {
+        User registered = userService.register(userRegisterDto);
+
+        redirectAttributes.addFlashAttribute("registerMessage", registered.getUsername() + " registered successfully");
         return "redirect:/welcome";
     }
-
 }
