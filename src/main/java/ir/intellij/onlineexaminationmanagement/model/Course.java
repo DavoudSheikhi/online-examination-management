@@ -29,12 +29,12 @@ public class Course extends BaseModel {
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
-    private User teacher;
+    private Teacher teacher;
 
     @ManyToMany
     @JoinTable(
             name = "course_students",
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id"))
-    private Set<User> enrolledStudents;
+    private Set<Student> enrolledStudents;
 }
