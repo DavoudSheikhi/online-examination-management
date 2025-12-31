@@ -20,6 +20,11 @@ public class RegisterController {
     @PostMapping
     public String register(@Valid @ModelAttribute UserRegisterDTO userRegisterDto,
                            RedirectAttributes redirectAttributes) {
+        User byUsername = userService.findByUsername(userRegisterDto.username());
+        if (byUsername != null) {
+            redirectAttributes.addFlashAttribute("registerMessage", byUsername.getUsername() + " is already exist, enter another username");
+            return "redirect:/welcome";
+        }
         User registered = userService.register(userRegisterDto);
 
         redirectAttributes.addFlashAttribute("registerMessage", registered.getUsername() + " registered successfully");
