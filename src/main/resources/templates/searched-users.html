@@ -18,6 +18,7 @@
             <th>Age</th>
             <th>Role</th>
             <th>Status</th>
+            <th>Active</th>
         </tr>
         </thead>
         <tbody>
@@ -27,7 +28,10 @@
             <td th:text="${u.phoneNumber}"></td>
             <td th:text="${u.age}"></td>
             <td th:text="${u.role}"></td>
-            <td th:text="${u.status}"></td>
+            <td th:text="${u.userStatus()}"></td>
+            <td>
+                <span th:text="${u.active()} ? 'Active' : 'DeActive'"></span>
+            </td>
         </tr>
         </tbody>
     </table>

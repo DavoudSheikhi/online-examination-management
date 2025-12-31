@@ -136,6 +136,7 @@
                 <th>Username</th>
                 <th>Role</th>
                 <th>Status</th>
+                <th>Active</th>
                 <th style="width: 200px;">Actions</th>
             </tr>
             </thead>
@@ -147,7 +148,10 @@
                 <td th:text="${u.age}"></td>
                 <td th:text="${u.username}"></td>
                 <td th:text="${u.role}"></td>
-                <td th:text="${u.status}"></td>
+                <td th:text="${u.userStatus}"></td>
+                <td>
+                    <span th:text="${u.active()} ? 'Active' : 'DeActive'"></span>
+                </td>
 
                 <td>
                     <div class="action-buttons" th:if="${u.role != 'MANAGER'}">

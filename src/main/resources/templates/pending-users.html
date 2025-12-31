@@ -70,11 +70,6 @@
 <div class="container container-box">
     <div class="card shadow p-4">
 
-        <!--        &lt;!&ndash; SUCCESS MESSAGE &ndash;&gt;-->
-        <!--        <div th:if="${deleteMessage != null}" class="alert alert-success">-->
-        <!--            <p th:text="${deleteMessage}"></p>-->
-        <!--        </div>-->
-
         <h2 class="text-center mb-4">Pending Users</h2>
 
         <table class="table table-bordered table-hover table-striped">
@@ -86,6 +81,7 @@
                 <th>Username</th>
                 <th>Role</th>
                 <th>User Status</th>
+                <th>Active</th>
                 <th style="width: 220px;">Actions</th>
             </tr>
             </thead>
@@ -97,7 +93,11 @@
                 <td th:text="${s.age}"></td>
                 <td th:text="${s.username}"></td>
                 <td th:text="${s.role}"></td>
-                <td th:text="${s.status}"></td>
+                <td th:text="${s.userStatus}"></td>
+                <td>
+                    <span th:text="${s.active()} ? 'Active' : 'DeActive'"></span>
+                </td>
+
 
                 <td>
                     <form th:action="@{/user/update-pending-status}"

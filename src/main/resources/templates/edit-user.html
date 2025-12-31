@@ -95,13 +95,13 @@
 
             <div class="mb-3">
                 <p class="text-muted">
-                    Current Status: <strong th:text="${user.status}"></strong>
+                    Current Status: <strong th:text="${user.userStatus}"></strong>
                 </p>
 
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select" required>
                     <option th:each="s : ${T(ir.intellij.onlineexaminationmanagement.model.UserStatus).values()}"
-                            th:if="${s.name() != user.status}"
+                            th:if="${s.name() != user.userStatus}"
                             th:value="${s}"
                             th:text="${s}">
                     </option>
