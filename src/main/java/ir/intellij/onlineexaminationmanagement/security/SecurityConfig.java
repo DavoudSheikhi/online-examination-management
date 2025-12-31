@@ -43,7 +43,7 @@ public class SecurityConfig {
         http.authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/welcome", "/register").permitAll()
-                        .requestMatchers("/dashboard/**").hasAnyRole("MANAGER", "TEACHER")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
