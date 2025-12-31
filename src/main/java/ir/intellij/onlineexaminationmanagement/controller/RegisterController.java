@@ -1,6 +1,6 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserRegisterDTO;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import jakarta.validation.Valid;
