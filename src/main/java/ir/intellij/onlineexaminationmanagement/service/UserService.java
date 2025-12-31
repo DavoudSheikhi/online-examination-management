@@ -1,10 +1,13 @@
 package ir.intellij.onlineexaminationmanagement.service;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
-import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserRegisterDTO;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserUpdateInfoDTO;
 import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 public interface UserService {
@@ -22,6 +25,8 @@ public interface UserService {
     List<User> findUsersByUserStatus(UserStatus userStatus);
 
     List<UserResponseDto> entityListToResponseList(List<User> users);
+
+    void updateUserInfo( UserUpdateInfoDTO dto, User user);
 
     List<User> findAll();
 
@@ -46,6 +51,7 @@ public interface UserService {
     void deleteUserFromEnrolledCourses(User user);
 
     List<User> findAllUsersInCourse(String courseCode);
+
 
 
 }

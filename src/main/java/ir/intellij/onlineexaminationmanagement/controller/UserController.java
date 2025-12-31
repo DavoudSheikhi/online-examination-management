@@ -1,13 +1,14 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
-import ir.intellij.onlineexaminationmanagement.model.Course;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserUpdateInfoDTO;
 import ir.intellij.onlineexaminationmanagement.model.Role;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
-import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final CourseService courseService;
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/update-pending-status")
     public String updatePendingStatus(@RequestParam("username") String username,
                                       @RequestParam("status") String status) {
@@ -32,6 +33,7 @@ public class UserController {
         return "redirect:/dashboard/pending-users";
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/edit/{username}")
     public String edit(@PathVariable("username") String username, Model model) {
         User user = userService.findByUsername(username);
@@ -40,16 +42,14 @@ public class UserController {
         return "edit-user";
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/update-info")
-    public String updateUser(@RequestParam String username,
-                             @RequestParam String fullName,
-                             @RequestParam String phoneNumber,
-                             @RequestParam Integer age,
-                             RedirectAttributes redirectAttributes) {
+    public String updateUserInfo(@RequestParam String username,
+                                 @Valid @ModelAttribute UserUpdateInfoDTO dto,
+                                 RedirectAttributes redirectAttributes) {
+
         User user = userService.findByUsername(username);
-        user.setFullName(fullName);
-        user.setPhoneNumber(phoneNumber);
-        user.setAge(age);
+        userService.updateUserInfo(dto, user);
         userService.save(user);
         redirectAttributes.addFlashAttribute("updateInfoMessage", user.getUsername() + " updated successfully");
         return "redirect:/user/edit/" + username;
@@ -86,6 +86,7 @@ public class UserController {
         return "redirect:/dashboard/all-users";
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/search")
     public String search(@RequestParam(required = false) String fullName,
                          @RequestParam(required = false) String username,

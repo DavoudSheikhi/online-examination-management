@@ -1,7 +1,8 @@
 package ir.intellij.onlineexaminationmanagement.service.impl;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
-import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserRegisterDTO;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserUpdateInfoDTO;
 import ir.intellij.onlineexaminationmanagement.mapper.UserMapper;
 import ir.intellij.onlineexaminationmanagement.model.*;
 import ir.intellij.onlineexaminationmanagement.repository.CourseRepository;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto entityToResponseDto(User user) {
-        return UserMapper.entityToResponse(user);
+        return userMapper.entityToResponse(user);
     }
 
     @Override
@@ -79,7 +80,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponseDto> entityListToResponseList(List<User> users) {
-        return UserMapper.entityListToResponseList(users);
+        return userMapper.entityListToResponseList(users);
+    }
+
+    @Override
+    public void updateUserInfo(UserUpdateInfoDTO dto, User user) {
+        userMapper.updateUserInfo(dto, user);
     }
 
     @Override
