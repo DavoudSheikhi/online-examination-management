@@ -42,24 +42,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(UserRegisterDTO registerDTO) {
-        User user;
-        if (registerDTO.role().equals("STUDENT")) {
-            Student student = new Student();
-            userMapper.updateUser(registerDTO, student);
-            student.setPassword(passwordEncoder.encode(registerDTO.password()));
-            student.setUserStatus(UserStatus.PENDING);
-            student.setActive(true);
-            user = student;
-        } else if (registerDTO.role().equals("TEACHER")) {
-            Teacher teacher = new Teacher();
-            userMapper.updateUser(registerDTO, teacher);
-            teacher.setPassword(passwordEncoder.encode(registerDTO.password()));
-            teacher.setUserStatus(UserStatus.PENDING);
-            teacher.setActive(true);
-            user = teacher;
-        } else {
+        if (!registerDTO.role().equals(Role.STUDENT.name()) && !registerDTO.role().equals(Role.TEACHER.name())) {
             throw new IllegalArgumentException("Role نامعتبر است: " + registerDTO.role());
         }
+        User user = userMapper.toEntity(registerDTO);
+        user.setPassword(passwordEncoder.encode(registerDTO.password()));
+        user.setUserStatus(UserStatus.PENDING);
+        user.setActive(true);
         return userRepository.save(user);
     }
 
@@ -123,8 +112,19 @@ public class UserServiceImpl implements UserService {
     public void changeRole(String username, Role role) {
         User byUsername = userRepository.findByUsername(username);
         deleteUserFromEnrolledCourses(byUsername);
-        byUsername.setRole(role);
-        userRepository.save(byUsername);
+
+        if (byUsername instanceof Student) {
+            Teacher teacher = userMapper.entityToTeacher(byUsername);
+            userRepository.delete(byUsername);
+            teacher.setRole(role);
+            userRepository.save(teacher);
+        }
+        if (byUsername instanceof Teacher) {
+            Student student = userMapper.entityToStudent(byUsername);
+            userRepository.delete(byUsername);
+            student.setRole(role);
+            userRepository.save(student);
+        }
     }
 
     @Override
