@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
     private String password;
     private Role role;
     private UserStatus userStatus;
-    private boolean isActive;
+    private boolean active;
 
     @Override
     public boolean isAccountNonExpired() {

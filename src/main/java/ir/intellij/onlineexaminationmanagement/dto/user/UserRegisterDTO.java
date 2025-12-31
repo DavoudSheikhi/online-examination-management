@@ -1,4 +1,4 @@
-package ir.intellij.onlineexaminationmanagement.dto;
+package ir.intellij.onlineexaminationmanagement.dto.user;
 
 import jakarta.validation.constraints.*;
 

@@ -1,7 +1,6 @@
 package ir.intellij.onlineexaminationmanagement.security;
 
 import ir.intellij.onlineexaminationmanagement.model.User;
-import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .password(user.getPassword())
                 .role(user.getRole())
                 .userStatus(user.getUserStatus())
-                .isActive(user.isActive())
+                .active(user.isActive())
                 .build();
     }
 }

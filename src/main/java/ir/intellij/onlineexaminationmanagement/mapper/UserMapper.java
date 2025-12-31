@@ -1,12 +1,12 @@
 package ir.intellij.onlineexaminationmanagement.mapper;
 
-import ir.intellij.onlineexaminationmanagement.dto.UserRegisterDTO;
-import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserRegisterDTO;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserUpdateInfoDTO;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -17,26 +17,10 @@ public interface UserMapper {
     void updateUser(UserRegisterDTO userRegisterDTO,
                     @MappingTarget User user);
 
+    UserResponseDto entityToResponse(User user);
 
+    List<UserResponseDto> entityListToResponseList(List<User> users);
 
-
-    static UserResponseDto entityToResponse(User user) {
-
-        return new UserResponseDto(
-                user.getFullName(),
-                user.getPhoneNumber(),
-                user.getAge(),
-                user.getUsername(),
-                String.valueOf(user.getRole()),
-                user.getUserStatus().toString()
-        );
-    }
-
-    public static List<UserResponseDto> entityListToResponseList(List<User> users) {
-        List<UserResponseDto> userResponseList = new ArrayList<>();
-        for (User user : users) {
-            userResponseList.add(entityToResponse(user));
-        }
-        return userResponseList;
-    }
+    void updateUserInfo(UserUpdateInfoDTO userUpdateInfoDTO,
+                        @MappingTarget User user);
 }

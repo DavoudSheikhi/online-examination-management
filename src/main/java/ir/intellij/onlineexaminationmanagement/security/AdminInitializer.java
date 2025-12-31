@@ -31,7 +31,7 @@ public class AdminInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("0000"))
                     .role(Role.MANAGER)
                     .userStatus(UserStatus.APPROVED)
-                    .isActive(true)
+                    .active(true)
                     .build();
             userRepository.save(manager);
         }
