@@ -1,12 +1,13 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
 
-import ir.intellij.onlineexaminationmanagement.dto.UserResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.user.UserResponseDto;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,12 +24,14 @@ public class DashboardController {
 
 
     //    After login go to dashboard.html
+    @PreAuthorize("hasAnyRole('MANAGER', 'TEACHER')")
     @GetMapping
     public String dashboard(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         model.addAttribute("user", user);
         return "dashboard";
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/pending-users")
     public String pendingUsers(Model model) {
         List<User> pendingUsers = userService.findUsersByUserStatus(UserStatus.PENDING);
@@ -37,6 +40,7 @@ public class DashboardController {
         return "pending-users";
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/all-users")
     public String allUsers(Model model) {
         List<User> all = userService.findAll();
