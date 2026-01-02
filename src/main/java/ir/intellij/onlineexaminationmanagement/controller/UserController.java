@@ -7,15 +7,19 @@ import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.model.UserStatus;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+@Validated
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -35,7 +39,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/edit/{username}")
-    public String edit(@PathVariable("username") String username, Model model) {
+    public String edit(@PathVariable("username") String username,
+                       Model model) {
         User user = userService.findByUsername(username);
         UserResponseDto responseDto = userService.entityToResponseDto(user);
         model.addAttribute("user", responseDto);
@@ -55,16 +60,27 @@ public class UserController {
         return "redirect:/user/edit/" + username;
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/update-role")
-    public String updateUserRole(@RequestParam String username,
-                                 @RequestParam String role,
-                                 RedirectAttributes redirectAttributes) {
-        userService.changeRole(username, Role.valueOf(role));
+    public String updateUserRole(
+            @NotBlank(message = "username must be enter")
+            @RequestParam String username,
+            @NotNull
+            @RequestParam Role role,
+            RedirectAttributes redirectAttributes) {
+        User byUsername = userService.findByUsername(username);
 
+        if (byUsername.getRole() == role) {
+            redirectAttributes.addFlashAttribute("updateRoleMessage", username + " role " + "already is " + role);
+            return "redirect:/user/edit/" + username;
+        }
+
+        userService.changeRole(username, role);
         redirectAttributes.addFlashAttribute("updateRoleMessage", username + " role " + "successfully changed to " + role);
         return "redirect:/user/edit/" + username;
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/update-status")
     public String updateStatus(@RequestParam String username,
                                @RequestParam String status,
