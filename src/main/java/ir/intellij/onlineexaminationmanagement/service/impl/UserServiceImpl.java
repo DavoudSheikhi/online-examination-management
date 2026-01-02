@@ -52,16 +52,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-
-//    @Override
-//    public UserResponseDto saveEntity(User user) {
-//
-//
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        User savedUser = userRepository.save(user);
-//        return UserMapper.entityToResponse(savedUser);
-//    }
-
     @Override
     public List<User> findUsersByUserStatus(UserStatus userStatus) {
         return userRepository.findUsersByUserStatus(userStatus);
@@ -109,22 +99,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void changeRole(String username, Role role) {
+    public void changeRole(String username,
+                           Role role) {
         User byUsername = userRepository.findByUsername(username);
         deleteUserFromEnrolledCourses(byUsername);
 
-        if (byUsername instanceof Student) {
-            Teacher teacher = userMapper.entityToTeacher(byUsername);
-            userRepository.delete(byUsername);
-            teacher.setRole(role);
-            userRepository.save(teacher);
-        }
-        if (byUsername instanceof Teacher) {
-            Student student = userMapper.entityToStudent(byUsername);
-            userRepository.delete(byUsername);
-            student.setRole(role);
-            userRepository.save(student);
-        }
+        byUsername.setRole(role);
+        userRepository.save(byUsername);
     }
 
     @Override
