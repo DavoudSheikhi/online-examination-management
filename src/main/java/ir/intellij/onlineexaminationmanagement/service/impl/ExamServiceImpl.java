@@ -2,10 +2,7 @@ package ir.intellij.onlineexaminationmanagement.service.impl;
 
 import ir.intellij.onlineexaminationmanagement.model.Course;
 import ir.intellij.onlineexaminationmanagement.model.Exam;
-import ir.intellij.onlineexaminationmanagement.model.User;
-import ir.intellij.onlineexaminationmanagement.repository.CourseRepository;
 import ir.intellij.onlineexaminationmanagement.repository.ExamRepository;
-import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import ir.intellij.onlineexaminationmanagement.service.ExamService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
