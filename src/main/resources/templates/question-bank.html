@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>مدیریت سوالات آزمون</title>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            text-align: right;
+        }
+        th {
+            background-color: #f3f3f3;
+        }
+        h3 {
+            margin-top: 32px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>
+    مدیریت سوالات آزمون |
+    دوره: <span th:text="${courseCode}"></span> |
+    آزمون: <span th:text="${examCode}"></span>
+</h2>
+
+<!-- ===================== جدول اول ===================== -->
+<h3>سوالات افزوده‌شده به آزمون</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>عنوان سؤال</th>
+        <th>نمره</th>
+        <th>عملیات</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="q : ${examQuestions}">
+        <td th:text="${q.title}">title</td>
+        <td th:text="${q.score}">1.0</td>
+        <td>
+            <form th:action="@{/exam/{examCode}/question/remove(examCode=${examCode})}"
+                  method="post" style="display:inline">
+                <input type="hidden" name="title" th:value="${q.title}">
+                <button type="submit">🗑 حذف</button>
+            </form>
+        </td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(examQuestions)}">
+        <td colspan="3">هنوز سوالی به آزمون اضافه نشده</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- ===================== جدول دوم ===================== -->
+<h3>بانک سوالات</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>عنوان</th>
+        <th>متن</th>
+        <th>طراح</th>
+        <th>نمره</th>
+        <th>افزودن</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="q : ${questionBank}">
+        <form th:action="@{/exam/{examCode}/question/add(examCode=${examCode})}"
+              method="post">
+
+            <td th:text="${q.title}">title</td>
+            <td th:text="${q.text}">text</td>
+            <td th:text="${q.creatorUsername}">teacher</td>
+
+            <td>
+                <select name="score" required>
+                    <option value="">انتخاب نمره</option>
+                    <option th:each="s : ${#numbers.sequence(1,16)}"
+                            th:value="${s * 0.25}"
+                            th:text="${s * 0.25}">
+                    </option>
+                </select>
+            </td>
+
+            <td>
+                <input type="hidden" name="title" th:value="${q.title}">
+
+                <button type="submit"
+                        th:disabled="${examQuestionTitles.contains(q.title)}">
+                    ➕ افزودن
+                </button>
+            </td>
+        </form>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/exam/{examCode}/edit(examCode=${examCode})}">
+    ⬅ بازگشت
+</a>
+
+</body>
+</html>
