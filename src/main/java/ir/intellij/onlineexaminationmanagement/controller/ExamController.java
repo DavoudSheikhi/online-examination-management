@@ -5,6 +5,7 @@ import ir.intellij.onlineexaminationmanagement.model.Exam;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import ir.intellij.onlineexaminationmanagement.service.ExamService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class ExamController {
     private final ExamService examService;
     private final CourseService courseService;
 
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/course/{courseCode}/exams/edit/{examCode}")
     public String editExam(@PathVariable String courseCode,
                            @PathVariable String examCode,
@@ -30,6 +32,7 @@ public class ExamController {
         return "edit-exam";
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/course/{courseCode}/exams/edit/{examCode}")
     public String editExam(@PathVariable String courseCode,
                            @PathVariable String examCode,
@@ -46,13 +49,16 @@ public class ExamController {
         return "redirect:/course/" + courseCode + "/ownExams";
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/course/{courseCode}/exams/delete/{examCode}")
     public String deleteExam(@PathVariable String courseCode,
-                           @PathVariable String examCode,
-                           RedirectAttributes redirectAttributes) {
+                             @PathVariable String examCode,
+                             RedirectAttributes redirectAttributes) {
         Exam exam = examService.findByExamCode(examCode);
         examService.delete(exam);
         redirectAttributes.addFlashAttribute("examDeleteSuccess", "آزمون: " + exam.getExamCode() + " با موفقیت حذف شد");
         return "redirect:/course/" + courseCode + "/ownExams";
     }
+
+
 }
