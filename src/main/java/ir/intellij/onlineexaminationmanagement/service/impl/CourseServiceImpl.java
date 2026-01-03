@@ -1,7 +1,7 @@
 package ir.intellij.onlineexaminationmanagement.service.impl;
 
-import ir.intellij.onlineexaminationmanagement.dto.CourseRequestDto;
-import ir.intellij.onlineexaminationmanagement.dto.CourseResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.course.CourseRequestDto;
+import ir.intellij.onlineexaminationmanagement.dto.course.CourseResponseDto;
 import ir.intellij.onlineexaminationmanagement.mapper.CourseMapper;
 import ir.intellij.onlineexaminationmanagement.model.Course;
 import ir.intellij.onlineexaminationmanagement.model.User;
