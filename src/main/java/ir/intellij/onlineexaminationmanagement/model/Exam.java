@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table
@@ -35,4 +36,8 @@ public class Exam extends BaseModel {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @OneToMany
+//            (mappedBy = "exam", cascade = CascadeType.ALL)
+    private List<ExamQuestion> questions;
 }
+
