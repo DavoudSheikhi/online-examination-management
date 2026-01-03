@@ -1,13 +1,14 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
-import ir.intellij.onlineexaminationmanagement.dto.CourseRequestDto;
-import ir.intellij.onlineexaminationmanagement.dto.CourseResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.course.CourseRequestDto;
+import ir.intellij.onlineexaminationmanagement.dto.course.CourseResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.question.QuestionResponseDTO;
 import ir.intellij.onlineexaminationmanagement.model.*;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import ir.intellij.onlineexaminationmanagement.service.ExamService;
+import ir.intellij.onlineexaminationmanagement.service.QuestionService;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
-import ir.intellij.onlineexaminationmanagement.service.impl.ExamServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,7 @@ public class CourseController {
     private final CourseService courseService;
     private final UserService userService;
     private final ExamService examService;
+    private final QuestionService questionService;
 
 
     @GetMapping("/all-courses")
@@ -165,8 +167,6 @@ public class CourseController {
     }
 
 
-
-
     @GetMapping("/{courseCode}/exams")
     public String courseExams(@PathVariable String courseCode, Model model) {
         Course course = courseService.findByCourseCode(courseCode);
@@ -216,5 +216,16 @@ public class CourseController {
         return "redirect:/course/" + courseCode + "/exams";
     }
 
+    @GetMapping("/{courseCode}/questions/bank")
+    public String courseQuestionBank(
+            @AuthenticationPrincipal CustomUserDetails teacher,
+            @PathVariable String courseCode,
+            Model model) {
+        List<QuestionResponseDTO> questionBankResponse = questionService.getQuestionBank(courseCode, teacher.getUsername());
 
+
+        model.addAttribute("questions", questionBankResponse);
+        model.addAttribute("courseCode", courseCode);
+        return "question-bank";
+    }
 }
