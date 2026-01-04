@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>افزودن سوال چند گزینه‌ای</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script>
+        let optionIndex = 0;
+
+        function addOption() {
+            const input = document.getElementById("optionText");
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            const list = document.getElementById("optionsList");
+
+            const div = document.createElement("div");
+            div.className = "form-check mb-2";
+
+            div.innerHTML = `
+                <input class="form-check-input"
+                       type="radio"
+                       name="correctOption"
+                       value="${optionIndex}"
+                       required>
+                <label class="form-check-label">
+                    ${text}
+                </label>
+                <input type="hidden"
+                       name="options[${optionIndex}].text"
+                       value="${text}">
+            `;
+
+            list.appendChild(div);
+            optionIndex++;
+            input.value = "";
+            updateOptionCount();
+        }
+
+        function updateOptionCount() {
+            document.getElementById("optionCount").value = optionIndex;
+        }
+
+        function validateForm() {
+            if (optionIndex < 2) {
+                alert("سوال چند گزینه‌ای باید حداقل ۲ گزینه داشته باشد");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h4 class="mb-4">➕ افزودن سوال چند گزینه‌ای</h4>
+
+            <!-- فقط بخش فرم را می‌گذارم تا کدت شلوغ نشود -->
+
+            <form method="post"
+                  th:action="@{/question/mcq/save}"
+                  onsubmit="return validateForm()">
+
+                <!-- عنوان -->
+                <div class="mb-3">
+                    <label class="form-label">عنوان سوال</label>
+                    <input type="text" name="title" class="form-control" required>
+                </div>
+
+                <!-- متن -->
+                <div class="mb-3">
+                    <label class="form-label">متن سوال</label>
+                    <textarea name="text" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <!-- course / exam -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">کد درس</label>
+                        <input type="text" name="courseCode"
+                               class="form-control"
+                               th:value="${courseCode}" readonly>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">کد آزمون</label>
+                        <input type="text" name="examCode"
+                               class="form-control"
+                               th:value="${examCode}" readonly>
+                    </div>
+                </div>
+
+                <!-- score -->
+                <div class="mb-3">
+                    <label class="form-label">نمره سوال</label>
+                    <select name="score" class="form-select" required>
+                        <option value="">انتخاب نمره</option>
+                        <option th:each="i : ${#numbers.sequence(1,16)}"
+                                th:value="${i * 0.25}"
+                                th:text="${i * 0.25}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- options -->
+                <hr>
+
+                <div class="mb-3">
+                    <label class="form-label">افزودن گزینه</label>
+                    <div class="input-group">
+                        <input type="text" id="optionText" class="form-control">
+                        <button type="button"
+                                class="btn btn-success"
+                                onclick="addOption()">➕</button>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">گزینه‌ها</label>
+                    <div id="optionsList" class="border rounded p-3"></div>
+                </div>
+
+                <!-- buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        💾 افزودن سوال
+                    </button>
+
+                    <a class="btn btn-outline-secondary w-100"
+                       th:href="@{'/course/' + ${courseCode}
+                    + '/exams/edit/' + ${examCode}}">
+                        ⬅ بازگشت
+                    </a>
+                </div>
+
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -4,113 +4,146 @@
     <meta charset="UTF-8">
     <title>مدیریت سوالات آزمون</title>
 
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-        }
-        th, td {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            text-align: right;
-        }
-        th {
-            background-color: #f3f3f3;
-        }
-        h3 {
-            margin-top: 32px;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
-<body>
 
-<h2>
-    مدیریت سوالات آزمون |
-    دوره: <span th:text="${courseCode}"></span> |
-    آزمون: <span th:text="${examCode}"></span>
-</h2>
+<body class="bg-light">
 
-<!-- ===================== جدول اول ===================== -->
-<h3>سوالات افزوده‌شده به آزمون</h3>
+<div class="container mt-4">
 
-<table>
-    <thead>
-    <tr>
-        <th>عنوان سؤال</th>
-        <th>نمره</th>
-        <th>عملیات</th>
-    </tr>
-    </thead>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="mb-1">مدیریت سوالات آزمون</h4>
+            <div class="text-muted">
+                دوره: <span th:text="${courseCode}"></span> |
+                آزمون: <span th:text="${examCode}"></span>
+            </div>
+        </div>
+    </div>
 
-    <tbody>
-    <tr th:each="q : ${examQuestions}">
-        <td th:text="${q.title}">title</td>
-        <td th:text="${q.score}">1.0</td>
-        <td>
-            <form th:action="@{/exam/{examCode}/question/remove(examCode=${examCode})}"
-                  method="post" style="display:inline">
-                <input type="hidden" name="title" th:value="${q.title}">
-                <button type="submit">🗑 حذف</button>
-            </form>
-        </td>
-    </tr>
+    <!-- ================= جدول سوالات آزمون ================= -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-body">
+            <h5 class="mb-3">سوالات افزوده‌شده به آزمون</h5>
 
-    <tr th:if="${#lists.isEmpty(examQuestions)}">
-        <td colspan="3">هنوز سوالی به آزمون اضافه نشده</td>
-    </tr>
-    </tbody>
-</table>
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>عنوان سؤال</th>
+                    <th>نوع</th>
+                    <th>نمره</th>
+                    <th class="text-center">عملیات</th>
+                </tr>
+                </thead>
 
-<!-- ===================== جدول دوم ===================== -->
-<h3>بانک سوالات</h3>
+                <tbody>
+                <tr th:each="q : ${examQuestions}">
+                    <td th:text="${q.title}">title</td>
 
-<table>
-    <thead>
-    <tr>
-        <th>عنوان</th>
-        <th>متن</th>
-        <th>طراح</th>
-        <th>نمره</th>
-        <th>افزودن</th>
-    </tr>
-    </thead>
+                    <td>
+                        <span class="badge bg-secondary"
+                              th:text="${q.type == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
+                   ? 'تشریحی'
+                   : 'چند گزینه‌ای'}">
+                        </span>
+                    </td>
 
-    <tbody>
-    <tr th:each="q : ${questionBank}">
-        <form th:action="@{/exam/{examCode}/question/add(examCode=${examCode})}"
-              method="post">
+                    <td th:text="${q.score}">1.0</td>
 
-            <td th:text="${q.title}">title</td>
-            <td th:text="${q.text}">text</td>
-            <td th:text="${q.creatorUsername}">teacher</td>
+                    <td class="text-center">
+                        <form th:action="@{/exam/{examCode}/question/remove(examCode=${examCode})}"
+                              method="post" class="d-inline">
+                            <input type="hidden" name="title" th:value="${q.title}">
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger">
+                                🗑 حذف
+                            </button>
+                        </form>
+                    </td>
+                </tr>
 
-            <td>
-                <select name="score" required>
-                    <option value="">انتخاب نمره</option>
-                    <option th:each="s : ${#numbers.sequence(1,16)}"
-                            th:value="${s * 0.25}"
-                            th:text="${s * 0.25}">
-                    </option>
-                </select>
-            </td>
+                <tr th:if="${#lists.isEmpty(examQuestions)}">
+                    <td colspan="4" class="text-center text-muted">
+                        هنوز سوالی به آزمون اضافه نشده
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <td>
-                <input type="hidden" name="title" th:value="${q.title}">
+    <!-- ================= جدول بانک سوالات ================= -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">بانک سوالات</h5>
 
-                <button type="submit"
-                        th:disabled="${examQuestionTitles.contains(q.title)}">
-                    ➕ افزودن
-                </button>
-            </td>
-        </form>
-    </tr>
-    </tbody>
-</table>
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>عنوان</th>
+                    <th>نوع</th>
+                    <th>متن</th>
+                    <th>نمره</th>
+                    <th class="text-center">افزودن</th>
+                </tr>
+                </thead>
 
-<a th:href="@{/exam/{examCode}/edit(examCode=${examCode})}">
-    ⬅ بازگشت
-</a>
+                <tbody>
+                <tr th:each="q : ${questionBank}">
+                    <form th:action="@{/exam/{examCode}/question/add(examCode=${examCode})}"
+                          method="post">
+
+                        <td th:text="${q.title}">title</td>
+
+                        <td>
+                            <span class="badge bg-info text-dark"
+                                  th:text="${q.type == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
+                   ? 'تشریحی'
+                   : 'چند گزینه‌ای'}">
+                            </span>
+                        </td>
+
+                        <td th:text="${q.text}">text</td>
+
+                        <td>
+                            <select name="score"
+                                    class="form-select form-select-sm"
+                                    required>
+                                <option value="">نمره</option>
+                                <option th:each="s : ${#numbers.sequence(1,16)}"
+                                        th:value="${s * 0.25}"
+                                        th:text="${s * 0.25}">
+                                </option>
+                            </select>
+                        </td>
+
+                        <td class="text-center">
+                            <input type="hidden" name="title" th:value="${q.title}">
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-success"
+                                    th:disabled="${examQuestionTitles.contains(q.title)}">
+                                ➕ افزودن
+                            </button>
+                        </td>
+                    </form>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================= دکمه بازگشت ================= -->
+    <div class="mb-5">
+        <a class="btn btn-outline-secondary w-100"
+           th:href="@{'/course/' + ${courseCode}
+                    + '/exams/edit/' + ${examCode}}">
+            ⬅ بازگشت
+        </a>
+    </div>
+
+</div>
 
 </body>
 </html>

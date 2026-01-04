@@ -187,7 +187,7 @@
     <!-- ===== Side Buttons ===== -->
     <div class="side-actions">
 
-        <a th:href="@{'/course/' + ${course.courseCode} + '/questions/bank/'}"
+        <a th:href="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/questionBank/add/'}"
            class="action-btn bank">
             📚 افزودن سوال از بانک سوالات
         </a>
@@ -195,18 +195,44 @@
         <div class="action-hint">
             انتخاب سوال‌های آماده از بانک سوالات
             و اضافه کردن آن‌ها به این آزمون
+            <br>
         </div>
+        <br>
+        <div>
+            <form th:action="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/question/new/'}"
+                  method="get"
+                  style="border:1px solid #ddd;padding:15px;border-radius:6px;">
 
-        <a th:href="@{'/exam/' + ${exam.examCode} + '/questions/new'}"
-           class="action-btn new">
-            ➕ افزودن سوال جدید
-        </a>
+                <div style="font-weight:bold;margin-bottom:10px;">
+                    ➕ افزودن سوال جدید
+                </div>
 
-        <div class="action-hint">
-            طراحی سوال جدید اختصاصی
-            برای این آزمون
+                <label style="display:block;margin-bottom:6px;">
+                    <input type="radio"
+                           name="questionType"
+                           value="DESCRIPTIVE"
+                           required>
+                    سوال تشریحی
+                </label>
+
+                <label style="display:block;margin-bottom:10px;">
+                    <input type="radio"
+                           name="questionType"
+                           value="MULTIPLE_CHOICE"
+                           required>
+                    سوال چند گزینه‌ای
+                </label>
+
+                <button type="submit" class="action-btn new" style="width:100%;">
+                    ادامه
+                </button>
+            </form>
+
+            <div class="action-hint">
+                ابتدا نوع سوال را انتخاب کنید
+            </div>
+
         </div>
-
     </div>
 
 </div>

@@ -10,6 +10,7 @@ import ir.intellij.onlineexaminationmanagement.service.ExamService;
 import ir.intellij.onlineexaminationmanagement.service.QuestionService;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -166,7 +167,7 @@ public class CourseController {
         return "course-users";
     }
 
-
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/{courseCode}/exams")
     public String courseExams(@PathVariable String courseCode, Model model) {
         Course course = courseService.findByCourseCode(courseCode);
@@ -178,6 +179,7 @@ public class CourseController {
 
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/{courseCode}/ownExams")
     public String ownExams(@AuthenticationPrincipal CustomUserDetails teacher,
                            @PathVariable String courseCode,
@@ -191,6 +193,7 @@ public class CourseController {
 
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/{courseCode}/exams/new")
     public String addNewExam(@AuthenticationPrincipal CustomUserDetails teacher,
                              @PathVariable String courseCode,
@@ -216,16 +219,39 @@ public class CourseController {
         return "redirect:/course/" + courseCode + "/exams";
     }
 
-    @GetMapping("/{courseCode}/questions/bank")
-    public String courseQuestionBank(
+    @PreAuthorize("hasRole('TEACHER')")
+    @GetMapping("/{courseCode}/exam/{examCode}/questionBank/add/")
+    public String addFromCourseQuestionBank(
             @AuthenticationPrincipal CustomUserDetails teacher,
             @PathVariable String courseCode,
+            @PathVariable String examCode,
             Model model) {
         List<QuestionResponseDTO> questionBankResponse = questionService.getQuestionBank(courseCode, teacher.getUsername());
 
 
-        model.addAttribute("questions", questionBankResponse);
+        model.addAttribute("questionBank", questionBankResponse);
         model.addAttribute("courseCode", courseCode);
+        model.addAttribute("examCode", examCode);
         return "question-bank";
     }
+
+    @PreAuthorize("hasRole('TEACHER')")
+    @GetMapping("/{courseCode}/exam/{examCode}/question/new/")
+    public String addNewQuestion(
+            @PathVariable String courseCode,
+            @PathVariable String examCode,
+            @RequestParam String questionType,
+            Model model) {
+        System.out.println("questionType: " + questionType);
+        if (questionType.equals(QuestionType.MULTIPLE_CHOICE.name())) {
+            model.addAttribute("courseCode", courseCode);
+            model.addAttribute("examCode", examCode);
+            return "add-multiple-choice-question";
+        } else {
+            model.addAttribute("courseCode", courseCode);
+            model.addAttribute("examCode", examCode);
+            return "add-descriptive-question";
+        }
+    }
 }
+
