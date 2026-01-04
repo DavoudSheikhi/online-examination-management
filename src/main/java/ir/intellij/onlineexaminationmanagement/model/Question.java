@@ -24,6 +24,10 @@ public abstract class Question extends BaseModel {
     @Column(nullable = false)
     private String text;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private QuestionType questionType;
+
     @ManyToOne
     private User creator;
     @Column(nullable = false)
