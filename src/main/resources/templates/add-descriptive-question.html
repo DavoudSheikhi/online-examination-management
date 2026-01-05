@@ -14,7 +14,13 @@
 
             <h4 class="mb-4">➕ افزودن سوال تشریحی</h4>
 
-            <form method="post" th:action="@{/question/descriptive/save}">
+            <!-- ====== MESSAGES ====== -->
+            <div th:if="${addNewDescriptiveSuccess}" class="alert alert-success text-center">
+                <span th:text="${addNewDescriptiveSuccess}"></span>
+            </div>
+
+            <form method="post"
+                  th:action="@{'/course/' + ${courseCode} + '/exam/' + ${examCode} + '/question/descriptive/new/'}">
 
                 <!-- عنوان -->
                 <div class="mb-3">

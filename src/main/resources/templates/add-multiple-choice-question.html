@@ -61,11 +61,12 @@
 
             <h4 class="mb-4">➕ افزودن سوال چند گزینه‌ای</h4>
 
-            <!-- فقط بخش فرم را می‌گذارم تا کدت شلوغ نشود -->
-
             <form method="post"
-                  th:action="@{/question/mcq/save}"
+                  th:action="@{'/course/' + ${courseCode} + '/exam/' + ${examCode} + '/question/multipleChoice/new/'}"
                   onsubmit="return validateForm()">
+
+                <input type="hidden" name="questionType" value="MULTIPLE_CHOICE">
+
 
                 <!-- عنوان -->
                 <div class="mb-3">
@@ -117,7 +118,8 @@
                         <input type="text" id="optionText" class="form-control">
                         <button type="button"
                                 class="btn btn-success"
-                                onclick="addOption()">➕</button>
+                                onclick="addOption()">➕
+                        </button>
                     </div>
                 </div>
 

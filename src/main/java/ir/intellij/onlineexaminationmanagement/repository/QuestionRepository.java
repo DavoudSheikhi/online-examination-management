@@ -10,4 +10,6 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findAllQuestionsByCourseAndCreator(Course course, User creator);
+
+    Question findByTitle(String title);
 }

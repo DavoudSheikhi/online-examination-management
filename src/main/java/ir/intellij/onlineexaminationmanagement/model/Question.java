@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "question_type")
+@DiscriminatorColumn(name = "type")
 @DiscriminatorValue(value = "QUESTION")
 @Getter
 @Setter

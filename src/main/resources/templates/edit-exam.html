@@ -187,7 +187,7 @@
     <!-- ===== Side Buttons ===== -->
     <div class="side-actions">
 
-        <a th:href="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/questionBank/add/'}"
+        <a th:href="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/questionBank/add'}"
            class="action-btn bank">
             📚 افزودن سوال از بانک سوالات
         </a>
@@ -198,41 +198,29 @@
             <br>
         </div>
         <br>
-        <div>
-            <form th:action="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/question/new/'}"
-                  method="get"
-                  style="border:1px solid #ddd;padding:15px;border-radius:6px;">
-
-                <div style="font-weight:bold;margin-bottom:10px;">
-                    ➕ افزودن سوال جدید
-                </div>
-
-                <label style="display:block;margin-bottom:6px;">
-                    <input type="radio"
-                           name="questionType"
-                           value="DESCRIPTIVE"
-                           required>
-                    سوال تشریحی
-                </label>
-
-                <label style="display:block;margin-bottom:10px;">
-                    <input type="radio"
-                           name="questionType"
-                           value="MULTIPLE_CHOICE"
-                           required>
-                    سوال چند گزینه‌ای
-                </label>
-
-                <button type="submit" class="action-btn new" style="width:100%;">
-                    ادامه
-                </button>
-            </form>
-
-            <div class="action-hint">
-                ابتدا نوع سوال را انتخاب کنید
-            </div>
-
+        <div style="font-weight:bold;margin-bottom:10px;">
+            ➕ افزودن سوال جدید
         </div>
+
+        <a th:href="@{'/course/' + ${course.courseCode}
+        + '/exam/' + ${exam.examCode}
+        + '/question/new/DESCRIPTIVE'}"
+           class="action-btn new"
+           style="margin-bottom:10px;">
+            ✏️ سوال تشریحی
+        </a>
+
+        <a th:href="@{'/course/' + ${course.courseCode}
+        + '/exam/' + ${exam.examCode}
+        + '/question/new/MULTIPLE_CHOICE'}"
+           class="action-btn new">
+            🔢 سوال چند گزینه‌ای
+        </a>
+
+        <div class="action-hint">
+            نوع سوال را انتخاب کنید
+        </div>
+
     </div>
 
 </div>

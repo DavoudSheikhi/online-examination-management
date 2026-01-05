@@ -4,15 +4,14 @@ import ir.intellij.onlineexaminationmanagement.dto.course.CourseRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.course.CourseResponseDto;
 import ir.intellij.onlineexaminationmanagement.dto.question.QuestionResponseDTO;
 import ir.intellij.onlineexaminationmanagement.model.*;
+import ir.intellij.onlineexaminationmanagement.repository.ExamQuestionRepository;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
-import ir.intellij.onlineexaminationmanagement.service.CourseService;
-import ir.intellij.onlineexaminationmanagement.service.ExamService;
-import ir.intellij.onlineexaminationmanagement.service.QuestionService;
-import ir.intellij.onlineexaminationmanagement.service.UserService;
+import ir.intellij.onlineexaminationmanagement.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -20,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,6 +29,7 @@ public class CourseController {
     private final UserService userService;
     private final ExamService examService;
     private final QuestionService questionService;
+    private final ExamQuestionService examQuestionService;
 
 
     @GetMapping("/all-courses")
@@ -220,38 +221,119 @@ public class CourseController {
     }
 
     @PreAuthorize("hasRole('TEACHER')")
-    @GetMapping("/{courseCode}/exam/{examCode}/questionBank/add/")
-    public String addFromCourseQuestionBank(
+    @GetMapping("/{courseCode}/exam/{examCode}/questionBank/add")
+    public String CourseQuestionBank(
             @AuthenticationPrincipal CustomUserDetails teacher,
             @PathVariable String courseCode,
             @PathVariable String examCode,
             Model model) {
         List<QuestionResponseDTO> questionBankResponse = questionService.getQuestionBank(courseCode, teacher.getUsername());
+        List<ExamQuestion> examQuestions = examQuestionService.findExamQuestions(examCode);
+        Set<String> examQuestionTitles = examQuestions.stream()
+                .map(ExamQuestion::getQuestion)
+                .map(Question::getTitle)
+                .collect(Collectors.toSet());
 
 
         model.addAttribute("questionBank", questionBankResponse);
+        model.addAttribute("examQuestions", examQuestions);
+        model.addAttribute("examQuestionTitles", examQuestionTitles);
         model.addAttribute("courseCode", courseCode);
         model.addAttribute("examCode", examCode);
+
         return "question-bank";
+    }
+    @Transactional
+    @PreAuthorize("hasRole('TEACHER')")
+    @PostMapping("/{courseCode}/exam/{examCode}/questionBank/add")
+    public String addExamQuestionFromBank(
+            @PathVariable String courseCode,
+            @PathVariable String examCode,
+            @RequestParam String questionTitle,
+            @RequestParam String score,
+            RedirectAttributes redirectAttributes
+    ) {
+        Exam byExamCode = examService.findByExamCode(examCode);
+        Question question = questionService.findByTitle(questionTitle);
+        ExamQuestion examQuestion = ExamQuestion.builder()
+                .question(question)
+                .exam(byExamCode)
+                .score(Double.valueOf(score))
+                .build();
+        ExamQuestion saved = examQuestionService.save(examQuestion);
+
+        redirectAttributes.addFlashAttribute("addToExamSuccess", questionTitle + " add to exam successfully");
+
+        return "redirect:/course/" + courseCode
+                + "/exam/" + examCode
+                + "/questionBank/add";
     }
 
     @PreAuthorize("hasRole('TEACHER')")
-    @GetMapping("/{courseCode}/exam/{examCode}/question/new/")
+    @GetMapping("/{courseCode}/exam/{examCode}/question/new/{type}")
     public String addNewQuestion(
             @PathVariable String courseCode,
             @PathVariable String examCode,
-            @RequestParam String questionType,
+            @PathVariable QuestionType type,
             Model model) {
-        System.out.println("questionType: " + questionType);
-        if (questionType.equals(QuestionType.MULTIPLE_CHOICE.name())) {
-            model.addAttribute("courseCode", courseCode);
-            model.addAttribute("examCode", examCode);
-            return "add-multiple-choice-question";
-        } else {
-            model.addAttribute("courseCode", courseCode);
-            model.addAttribute("examCode", examCode);
-            return "add-descriptive-question";
-        }
+        model.addAttribute("courseCode", courseCode);
+        model.addAttribute("examCode", examCode);
+
+        return switch (type) {
+            case DESCRIPTIVE -> "add-descriptive-question";
+            case MULTIPLE_CHOICE -> "add-multiple-choice-question";
+        };
+//            if (questionType.equals(QuestionType.MULTIPLE_CHOICE.name())) {
+
+//                model.addAttribute("questionType", questionType);
+//                return "add-multiple-choice-question";
+//            } else {
+//                model.addAttribute("courseCode", courseCode);
+//                model.addAttribute("examCode", examCode);
+//                model.addAttribute("questionType", questionType);
+//                return "add-descriptive-question";
+//            }
     }
+
+    @Transactional
+    @PreAuthorize("hasRole('TEACHER')")
+    @PostMapping("/{courseCode}/exam/{examCode}/question/descriptive/new/")
+    public String addNewDescriptiveQuestion(
+            @AuthenticationPrincipal CustomUserDetails teacher,
+            @PathVariable String courseCode,
+            @PathVariable String examCode,
+            @RequestParam String title,
+            @RequestParam String text,
+            @RequestParam String score,
+            RedirectAttributes redirectAttributes
+    ) {
+        User byUsername = userService.findByUsername(teacher.getUsername());
+        questionService.addDescriptive(byUsername, courseCode, examCode, title, text, score);
+        redirectAttributes.addFlashAttribute("addNewDescriptiveSuccess", "the question:" + title + " added successfully");
+        return "redirect:/course/" + courseCode + "/exam/" + examCode + "/question/new/DESCRIPTIVE";
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('TEACHER')")
+    @PostMapping("/{courseCode}/exam/{examCode}/question/multipleChoice/new/")
+    public String addNewMultipleChoiceQuestion(
+            @AuthenticationPrincipal CustomUserDetails teacher,
+            @PathVariable String courseCode,
+            @PathVariable String examCode,
+            @RequestParam String title,
+            @RequestParam String text,
+            @RequestParam String score,
+
+            RedirectAttributes redirectAttributes
+    ) {
+        User byUsername = userService.findByUsername(teacher.getUsername());
+//        questionService.addMultipleChoice(byUsername, courseCode, examCode, title, text, score);
+        redirectAttributes.addFlashAttribute("addNewMultipleChoiceSuccess", "the question:" + title + " added successfully");
+        return "redirect:/course/" + courseCode + "/exam/" + examCode + "/question/new/DESCRIPTIVE";
+    }
+
+
+
+
 }
 

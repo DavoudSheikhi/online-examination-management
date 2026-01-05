@@ -24,6 +24,11 @@
 
     <!-- ================= جدول سوالات آزمون ================= -->
     <div class="card shadow-sm mb-5">
+        <!-- ====== MESSAGES ====== -->
+        <div th:if="${addToExamSuccess}" class="alert alert-success text-center">
+            <span th:text="${addToExamSuccess}"></span>
+        </div>
+
         <div class="card-body">
             <h5 class="mb-3">سوالات افزوده‌شده به آزمون</h5>
 
@@ -39,11 +44,11 @@
 
                 <tbody>
                 <tr th:each="q : ${examQuestions}">
-                    <td th:text="${q.title}">title</td>
+                    <td th:text="${q.question.title}">title</td>
 
                     <td>
                         <span class="badge bg-secondary"
-                              th:text="${q.type == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
+                              th:text="${q.question.questionType == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
                    ? 'تشریحی'
                    : 'چند گزینه‌ای'}">
                         </span>
@@ -54,7 +59,7 @@
                     <td class="text-center">
                         <form th:action="@{/exam/{examCode}/question/remove(examCode=${examCode})}"
                               method="post" class="d-inline">
-                            <input type="hidden" name="title" th:value="${q.title}">
+                            <input type="hidden" name="title" th:value="${q.question.title}">
                             <button type="submit"
                                     class="btn btn-sm btn-outline-danger">
                                 🗑 حذف
@@ -91,14 +96,18 @@
 
                 <tbody>
                 <tr th:each="q : ${questionBank}">
-                    <form th:action="@{/exam/{examCode}/question/add(examCode=${examCode})}"
-                          method="post">
+                    <form method="post"
+                          th:action="@{/course/{courseCode}/exam/{examCode}/questionBank/add
+                    (examCode=${examCode} ,
+                    courseCode=${courseCode})
+                    }">
+                        <input type="hidden" name="questionTitle" th:value="${q.title}">
 
                         <td th:text="${q.title}">title</td>
 
                         <td>
                             <span class="badge bg-info text-dark"
-                                  th:text="${q.type == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
+                                  th:text="${q.questionType == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
                    ? 'تشریحی'
                    : 'چند گزینه‌ای'}">
                             </span>
@@ -119,7 +128,6 @@
                         </td>
 
                         <td class="text-center">
-                            <input type="hidden" name="title" th:value="${q.title}">
 
                             <button type="submit"
                                     class="btn btn-sm btn-success"
