@@ -5,11 +5,11 @@ import ir.intellij.onlineexaminationmanagement.dto.course.CourseResponseDto;
 import ir.intellij.onlineexaminationmanagement.dto.option.CreateMultipleChoiceQuestionDto;
 import ir.intellij.onlineexaminationmanagement.dto.question.QuestionResponseDTO;
 import ir.intellij.onlineexaminationmanagement.model.*;
-import ir.intellij.onlineexaminationmanagement.repository.ExamQuestionRepository;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -242,7 +242,7 @@ public class CourseController {
         model.addAttribute("courseCode", courseCode);
         model.addAttribute("examCode", examCode);
 
-        return "question-bank";
+        return "add-from-question-bank";
     }
 
     @Transactional
@@ -330,5 +330,19 @@ public class CourseController {
         redirectAttributes.addFlashAttribute("addNewMultipleChoiceSuccess", "the question:" + dto.title() + " added successfully");
         return "redirect:/course/" + courseCode + "/exam/" + examCode + "/question/new/MULTIPLE_CHOICE";
     }
-}
 
+    @PreAuthorize("hasRole('TEACHER')")
+    @GetMapping("/{courseCode}/questionBank")
+    public String courseQuestionBank(
+            @AuthenticationPrincipal CustomUserDetails teacher,
+            @PathVariable String courseCode,
+            Model model
+    ) {
+        List<QuestionResponseDTO> questionBank = questionService.getQuestionBank(courseCode, teacher.getUsername());
+        model.addAttribute("questionBank", questionBank);
+        model.addAttribute("courseCode", courseCode);
+        model.addAttribute("teacher", teacher);
+        return "course-question-bank";
+
+    }
+}
