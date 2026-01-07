@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>بانک سوالات من</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+
+    <!-- هدر صفحه -->
+    <div class="mb-4">
+        <h3>بانک سوالات (<span th:text="${teacher.username}">teacherUsername</span>)</h3>
+        <p>کد دوره: <strong th:text="${courseCode}">courseCode</strong></p>
+    </div>
+
+    <!-- کارت جدول بانک سوالات -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>عنوان</th>
+                    <th>نوع</th>
+                    <th>متن</th>
+                    <th>سازنده</th>
+                    <th class="text-center">عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="q : ${questionBank}">
+                    <td th:text="${q.title}">عنوان سوال</td>
+                    <td>
+                            <span class="badge bg-info text-dark"
+                                  th:text="${q.questionType == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
+                                           ? 'تشریحی' : 'چند گزینه‌ای'}">
+                                نوع
+                            </span>
+                    </td>
+                    <td th:text="${q.text}">متن سوال</td>
+                    <td th:text="${q.creatorUsername}">سازنده</td>
+                    <td class="text-center">
+                        <!-- دکمه ویرایش -->
+                        <a th:href="@{'/course/' + ${courseCode} + '/question/edit/' + ${q.title}}"
+                           class="btn btn-sm btn-primary me-2">
+                            ✏ ویرایش
+                        </a>
+
+                        <!-- دکمه حذف -->
+                        <form th:action="@{'/course/' + ${courseCode} + '/question/delete/' + ${q.title}}"
+                              method="post" style="display:inline-block;">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                🗑 حذف
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- دکمه بازگشت -->
+    <div class="mt-4">
+        <a class="btn btn-outline-secondary w-100"
+           th:href="@{'/teacher/courses'}">
+            ⬅ بازگشت
+        </a>
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
