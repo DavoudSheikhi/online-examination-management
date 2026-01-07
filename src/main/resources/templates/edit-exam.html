@@ -3,227 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <title>ویرایش آزمون</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
 
     <style>
         body {
             font-family: sans-serif;
-            direction: rtl;
         }
 
-        h2 {
-            margin-bottom: 10px;
-        }
-
-        a.back {
-            display: inline-block;
-            margin-bottom: 20px;
-            text-decoration: none;
-            color: #555;
-        }
-
-        /* ===== Layout ===== */
-        .container {
+        .container-custom {
             display: flex;
             gap: 30px;
             align-items: flex-start;
-        }
-
-        /* ===== Form ===== */
-        form {
-            width: 600px;
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 6px;
-            background-color: #fff;
-        }
-
-        label {
-            display: block;
-            margin-top: 12px;
-            font-weight: bold;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 6px;
-            margin-top: 4px;
-            font-size: 14px;
-        }
-
-        input[readonly] {
-            background-color: #eee;
-        }
-
-        button {
             margin-top: 20px;
-            padding: 10px 16px;
-            background-color: #2196F3;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 14px;
         }
 
-        button:hover {
-            background-color: #1e88e5;
-        }
-
-        /* ===== Side Actions ===== */
-        .side-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 10px;
-            min-width: 260px;
-        }
-
-        .action-btn {
-            display: block;
-            padding: 14px 16px;
-            text-decoration: none;
-            color: white;
-            border-radius: 6px;
+        .side-actions .btn {
             font-weight: bold;
             text-align: center;
-            transition: background-color 0.2s ease;
         }
 
-        .action-btn.bank {
-            background-color: #4CAF50;
-        }
-
-        .action-btn.bank:hover {
-            background-color: #43a047;
-        }
-
-        .action-btn.new {
-            background-color: #FF9800;
-        }
-
-        .action-btn.new:hover {
-            background-color: #fb8c00;
-        }
-
-        .action-hint {
+        .side-actions .action-hint {
             font-size: 13px;
             color: #666;
-            line-height: 1.6;
+            line-height: 1.5;
+        }
+
+        .back-btn {
+            background-color: #6c757d;
+        }
+
+        .back-btn:hover {
+            background-color: #5c636a;
         }
     </style>
 </head>
-<body>
+<body class="p-4">
 
-<h2>
+<h2 class="mb-3">
     ✏️ ویرایش آزمون
     <span th:text="${exam.examCode}"></span>
 </h2>
 
-<a th:href="@{'/course/' + ${course.courseCode} + '/ownExams'}"
-   class="back">
-    ⬅ بازگشت
-</a>
-
-<div class="container">
+<div class="container-custom">
 
     <!-- ===== Edit Exam Form ===== -->
-    <form th:action="@{'/course/' + ${course.courseCode}
-                       + '/exams/edit/' + ${exam.examCode}}"
-          method="post">
+    <form th:action="@{'/course/' + ${course.courseCode} + '/exams/edit/' + ${exam.examCode}}"
+          method="post" class="p-4 border rounded bg-white shadow" style="width: 600px;">
 
-        <input type="hidden"
-               name="examCode"
-               th:value="${exam.examCode}"/>
+        <input type="hidden" name="examCode" th:value="${exam.examCode}"/>
 
-        <label>
-            کد آزمون
-            <input type="text"
-                   th:value="${exam.examCode}"
-                   readonly>
-        </label>
+        <div class="mb-3">
+            <label class="form-label">کد آزمون</label>
+            <input type="text" class="form-control" th:value="${exam.examCode}" readonly>
+        </div>
 
-        <label>
-            عنوان آزمون
-            <input type="text"
-                   th:value="${exam.title}"
-                   readonly>
-        </label>
+        <div class="mb-3">
+            <label class="form-label">عنوان آزمون</label>
+            <input type="text" class="form-control" th:value="${exam.title}" readonly>
+        </div>
 
-        <label>
-            ایجادکننده
-            <input type="text"
-                   th:value="${exam.creatorUsername}"
-                   readonly>
-        </label>
+        <div class="mb-3">
+            <label class="form-label">ایجادکننده</label>
+            <input type="text" class="form-control" th:value="${exam.creatorUsername}" readonly>
+        </div>
 
-        <label>
-            تاریخ شروع
-            <input type="date"
-                   name="startDate"
-                   th:value="${exam.startDate}">
-        </label>
+        <div class="mb-3">
+            <label class="form-label">تاریخ شروع</label>
+            <input type="date" class="form-control" name="startDate" th:value="${exam.startDate}">
+        </div>
 
-        <label>
-            مدت زمان (دقیقه)
-            <input type="number"
-                   name="durationInMinutes"
-                   min="1"
+        <div class="mb-3">
+            <label class="form-label">مدت زمان (دقیقه)</label>
+            <input type="number" class="form-control" name="durationInMinutes" min="1"
                    th:value="${exam.durationInMinutes}">
-        </label>
+        </div>
 
-        <label>
-            توضیحات
-            <textarea name="description"
-                      rows="3"
-                      th:text="${exam.description}">
-            </textarea>
-        </label>
+        <div class="mb-3">
+            <label class="form-label">توضیحات</label>
+            <textarea name="description" rows="3" class="form-control" th:text="${exam.description}"></textarea>
+        </div>
 
-        <button type="submit">
-            💾 ذخیره تغییرات
-        </button>
+        <button type="submit" class="btn btn-primary w-100">💾 ذخیره تغییرات</button>
     </form>
 
     <!-- ===== Side Buttons ===== -->
-    <div class="side-actions">
+    <div class="side-actions d-flex flex-column" style="min-width: 260px;">
 
         <a th:href="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/questionBank/add'}"
-           class="action-btn bank">
+           class="btn btn-success mb-2">
             📚 افزودن سوال از بانک سوالات
         </a>
-
-        <div class="action-hint">
-            انتخاب سوال‌های آماده از بانک سوالات
-            و اضافه کردن آن‌ها به این آزمون
-            <br>
-        </div>
-        <br>
-        <div style="font-weight:bold;margin-bottom:10px;">
-            ➕ افزودن سوال جدید
+        <div class="action-hint mb-3">
+            انتخاب سوال‌های آماده از بانک سوالات و اضافه کردن آن‌ها به این آزمون
         </div>
 
-        <a th:href="@{'/course/' + ${course.courseCode}
-        + '/exam/' + ${exam.examCode}
-        + '/question/new/DESCRIPTIVE'}"
-           class="action-btn new"
-           style="margin-bottom:10px;">
+        <div class="fw-bold mb-2">➕ افزودن سوال جدید</div>
+
+        <a th:href="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/question/new/DESCRIPTIVE'}"
+           class="btn btn-warning mb-2 text-dark">
             ✏️ سوال تشریحی
         </a>
 
-        <a th:href="@{'/course/' + ${course.courseCode}
-        + '/exam/' + ${exam.examCode}
-        + '/question/new/MULTIPLE_CHOICE'}"
-           class="action-btn new">
+        <a th:href="@{'/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/question/new/MULTIPLE_CHOICE'}"
+           class="btn btn-warning text-dark mb-3">
             🔢 سوال چند گزینه‌ای
         </a>
 
-        <div class="action-hint">
-            نوع سوال را انتخاب کنید
-        </div>
+        <div class="action-hint mb-2">نوع سوال را انتخاب کنید</div>
 
+        <!-- دکمه بازگشت -->
+        <a th:href="@{'/course/' + ${courseCode} + '/ownExams'}"
+           class="btn back-btn text-white w-100">
+            ⬅ بازگشت
+        </a>
     </div>
 
 </div>
+
+<!-- Bootstrap JS (اختیاری) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

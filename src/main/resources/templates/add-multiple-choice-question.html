@@ -61,6 +61,11 @@
 
             <h4 class="mb-4">➕ افزودن سوال چند گزینه‌ای</h4>
 
+            <!-- ====== MESSAGES ====== -->
+            <div th:if="${addNewMultipleChoiceSuccess}" class="alert alert-success text-center">
+                <span th:text="${addNewMultipleChoiceSuccess}"></span>
+            </div>
+
             <form method="post"
                   th:action="@{'/course/' + ${courseCode} + '/exam/' + ${examCode} + '/question/multipleChoice/new/'}"
                   onsubmit="return validateForm()">

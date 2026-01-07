@@ -2,6 +2,7 @@ package ir.intellij.onlineexaminationmanagement.controller;
 
 import ir.intellij.onlineexaminationmanagement.dto.course.CourseRequestDto;
 import ir.intellij.onlineexaminationmanagement.dto.course.CourseResponseDto;
+import ir.intellij.onlineexaminationmanagement.dto.option.CreateMultipleChoiceQuestionDto;
 import ir.intellij.onlineexaminationmanagement.dto.question.QuestionResponseDTO;
 import ir.intellij.onlineexaminationmanagement.model.*;
 import ir.intellij.onlineexaminationmanagement.repository.ExamQuestionRepository;
@@ -243,6 +244,7 @@ public class CourseController {
 
         return "question-bank";
     }
+
     @Transactional
     @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/{courseCode}/exam/{examCode}/questionBank/add")
@@ -320,20 +322,13 @@ public class CourseController {
             @AuthenticationPrincipal CustomUserDetails teacher,
             @PathVariable String courseCode,
             @PathVariable String examCode,
-            @RequestParam String title,
-            @RequestParam String text,
-            @RequestParam String score,
-
+            @ModelAttribute CreateMultipleChoiceQuestionDto dto,
             RedirectAttributes redirectAttributes
     ) {
         User byUsername = userService.findByUsername(teacher.getUsername());
-//        questionService.addMultipleChoice(byUsername, courseCode, examCode, title, text, score);
-        redirectAttributes.addFlashAttribute("addNewMultipleChoiceSuccess", "the question:" + title + " added successfully");
-        return "redirect:/course/" + courseCode + "/exam/" + examCode + "/question/new/DESCRIPTIVE";
+        questionService.addMultipleChoice(byUsername, courseCode, examCode, dto);
+        redirectAttributes.addFlashAttribute("addNewMultipleChoiceSuccess", "the question:" + dto.title() + " added successfully");
+        return "redirect:/course/" + courseCode + "/exam/" + examCode + "/question/new/MULTIPLE_CHOICE";
     }
-
-
-
-
 }
 
