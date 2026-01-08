@@ -15,4 +15,6 @@ public interface ExamService {
     Exam findByExamCode(String examCode);
 
     void delete(Exam exam);
+
+    List<Exam> findAvailableExamsForStudent(String courseCode, String username);
 }

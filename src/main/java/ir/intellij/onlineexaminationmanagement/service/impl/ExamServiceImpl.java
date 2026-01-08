@@ -46,4 +46,11 @@ public class ExamServiceImpl implements ExamService {
     public void delete(Exam exam) {
         examRepository.delete(exam);
     }
+
+    @Override
+    public List<Exam> findAvailableExamsForStudent(String courseCode, String username) {
+        return examRepository.findAvailableExamsForStudent(courseCode, username);
+    }
 }
+
+
