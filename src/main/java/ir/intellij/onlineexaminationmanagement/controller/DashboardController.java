@@ -24,7 +24,7 @@ public class DashboardController {
 
 
     //    After login go to dashboard.html
-    @PreAuthorize("hasAnyRole('MANAGER', 'TEACHER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'TEACHER', 'STUDENT')")
     @GetMapping
     public String dashboard(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         model.addAttribute("user", user);

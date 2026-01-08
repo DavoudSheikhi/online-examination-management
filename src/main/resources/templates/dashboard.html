@@ -124,6 +124,17 @@
 
         </div>
 
+        <!-- دکمه فقط برای STUDENT -->
+        <div th:if="${user.role.name() == 'STUDENT'}">
+
+            <h4 class="mb-3">Dashboard</h4>
+
+            <div class="d-flex flex-column gap-3">
+                <a href="/student/courses" class="btn btn-green btn-custom">
+                    🎓 دوره‌های من
+                </a>
+            </div>
+        </div>
 
         <!-- LOGOUT -->
         <div class="mt-4 pt-3 border-top">
