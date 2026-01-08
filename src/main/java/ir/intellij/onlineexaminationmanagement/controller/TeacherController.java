@@ -6,6 +6,7 @@ import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ public class TeacherController {
     private final CourseService courseService;
     private final UserService userService;
 
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/courses")
     public String myCourses(@AuthenticationPrincipal CustomUserDetails user,
                             Model model) {
