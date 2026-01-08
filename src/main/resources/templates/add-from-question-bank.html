@@ -37,29 +37,41 @@
                 <tr>
                     <th>عنوان سؤال</th>
                     <th>نوع</th>
+                    <th>متن</th>
                     <th>نمره</th>
                     <th class="text-center">عملیات</th>
                 </tr>
                 </thead>
 
                 <tbody>
+                <tfoot>
+                <tr class="table-secondary fw-bold">
+                    <td colspan="3" class="text-end">
+                        جمع کل نمرات:
+                    </td>
+                    <td th:text="${totalScore}">0</td>
+                    <td></td>
+                </tr>
+                </tfoot>
+
                 <tr th:each="q : ${examQuestions}">
-                    <td th:text="${q.question.title}">title</td>
+                    <td th:text="${q.title}">title</td>
 
                     <td>
                         <span class="badge bg-secondary"
-                              th:text="${q.question.questionType == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
+                              th:text="${q.questionType == T(ir.intellij.onlineexaminationmanagement.model.QuestionType).DESCRIPTIVE
                    ? 'تشریحی'
                    : 'چند گزینه‌ای'}">
                         </span>
                     </td>
+                    <td th:text="${q.text}">title></td>
 
                     <td th:text="${q.score}">1.0</td>
 
                     <td class="text-center">
                         <form th:action="@{/exam/{examCode}/question/remove(examCode=${examCode})}"
                               method="post" class="d-inline">
-                            <input type="hidden" name="title" th:value="${q.question.title}">
+                            <input type="hidden" name="title" th:value="${q.title}">
                             <button type="submit"
                                     class="btn btn-sm btn-outline-danger">
                                 🗑 حذف
