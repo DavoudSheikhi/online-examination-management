@@ -8,20 +8,33 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
+@DiscriminatorValue(value = "EXAM_QUESTION")
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class ExamQuestion extends BaseModel {
+public abstract class ExamQuestion extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "exam_question_seq")
     @SequenceGenerator(name = "exam_question_seq", sequenceName = "exam_question_seq", allocationSize = 5)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String title;
+    @Column(nullable = false)
+    private String text;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private QuestionType questionType;
+
     @ManyToOne
-    private Question question;
+    private User creator;
+    @Column(nullable = false)
+    private String creatorUsername;
+
 
     @ManyToOne
     private Exam exam;
