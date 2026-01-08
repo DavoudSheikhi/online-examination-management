@@ -1,122 +1,100 @@
 <!DOCTYPE html>
-<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<html lang="fa" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>آزمون‌های من</title>
+
+    <!-- Bootstrap 5 RTL -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
 
     <style>
         body {
             font-family: sans-serif;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #aaa;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
-        a.button {
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            color: white;
-            font-size: 14px;
-        }
-
-        a.button.edit {
-            background-color: #2196F3;
-        }
-
-        a.button.delete {
-            background-color: #f44336;
-        }
-
-        a.button.back {
-            background-color: #777;
-        }
-
-        .actions {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-        }
-
-        .top-actions {
-            margin-bottom: 15px;
-        }
     </style>
 </head>
-<body>
+<body class="bg-light">
 
-<h2>
-    آزمون‌های من در درس
-    <span th:text="${course.courseCode}"></span>
-</h2>
+<div class="container mt-4">
 
-<div th:if="${examEditSuccess}" class="alert alert-success text-center">
-    <span th:text="${examEditSuccess}"></span>
+    <!-- Title -->
+    <div class="mb-4 text-center">
+        <h4 class="fw-bold">
+            آزمون‌های من در درس
+            <span class="text-primary" th:text="${course.courseCode}"></span>
+        </h4>
+    </div>
+
+    <!-- ====== MESSAGES ====== -->
+    <div th:if="${errorMessage}" class="alert alert-success text-center">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Success Alert -->
+    <div th:if="${examEditSuccess}" class="alert alert-success text-center">
+        <span th:text="${examEditSuccess}"></span>
+    </div>
+
+    <!-- Top Actions -->
+    <div class="mb-3">
+        <a th:href="@{'/course/' + ${course.courseCode} + '/exams'}"
+           class="btn btn-secondary">
+            ⬅ بازگشت
+        </a>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+
+            <table class="table table-bordered table-hover align-middle mb-0 text-center">
+                <thead class="table-light">
+                <tr>
+                    <th>کد آزمون</th>
+                    <th>عنوان</th>
+                    <th>تاریخ برگزاری</th>
+                    <th>مدت (دقیقه)</th>
+                    <th>توضیحات</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="exam : ${ownExams}">
+                    <td th:text="${exam.examCode}"></td>
+                    <td th:text="${exam.title}"></td>
+                    <td th:text="${exam.startDate}"></td>
+                    <td th:text="${exam.durationInMinutes}"></td>
+                    <td th:text="${exam.description}"></td>
+
+                    <td>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a th:href="@{'/course/' + ${course.courseCode} + '/exams/edit/' + ${exam.examCode}}"
+                               class="btn btn-sm btn-primary">
+                                ✏ ویرایش
+                            </a>
+
+                            <a th:href="@{'/course/' + ${course.courseCode} + '/exams/delete/' + ${exam.examCode}}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('آیا از حذف این آزمون مطمئن هستید؟');">
+                                🗑 حذف
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(ownExams)}">
+                    <td colspan="6" class="text-muted py-4">
+                        شما هنوز آزمونی برای این درس ایجاد نکرده‌اید
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
 </div>
-<br>
-<div class="top-actions">
-    <a th:href="@{'/course/' + ${course.courseCode} + '/exams'}"
-       class="button back">
-        بازگشت
-    </a>
-</div>
-
-<table>
-    <thead>
-    <tr>
-        <th>کد آزمون</th>
-        <th>عنوان</th>
-        <th>تاریخ برگزاری</th>
-        <th>مدت زمان (دقیقه)</th>
-        <th>توضیحات</th>
-        <th>عملیات</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:each="exam : ${ownExams}">
-        <td th:text="${exam.examCode}"></td>
-        <td th:text="${exam.title}"></td>
-        <td th:text="${exam.startDate}"></td>
-        <td th:text="${exam.durationInMinutes}"></td>
-        <td th:text="${exam.description}"></td>
-
-        <td>
-            <div class="actions">
-                <a th:href="@{'/course/' + ${course.courseCode} + '/exams/edit/' + ${exam.examCode}}"
-                   class="button edit">
-                    ویرایش
-                </a>
-
-                <a th:href="@{'/course/' + ${course.courseCode} + '/exams/delete/' + ${exam.examCode}}"
-                   class="button delete"
-                   onclick="return confirm('آیا از حذف این آزمون مطمئن هستید؟');">
-                    حذف
-                </a>
-            </div>
-        </td>
-    </tr>
-
-    <tr th:if="${#lists.isEmpty(ownExams)}">
-        <td colspan="6">
-            شما هنوز آزمونی برای این درس ایجاد نکرده‌اید
-        </td>
-    </tr>
-    </tbody>
-</table>
 
 </body>
 </html>

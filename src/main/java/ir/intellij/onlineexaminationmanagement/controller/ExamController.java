@@ -26,9 +26,20 @@ public class ExamController {
     @GetMapping("/course/{courseCode}/exams/edit/{examCode}")
     public String editExam(@PathVariable String courseCode,
                            @PathVariable String examCode,
+                           RedirectAttributes redirectAttributes,
                            Model model) {
+
         Course course = courseService.findByCourseCode(courseCode);
         Exam exam = examService.findByExamCode(examCode);
+
+        if (exam.getStartDate().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "بعد از برگزاری آزمون امکان ویرایش یا حذف آزمون وجود ندارد"
+            );
+            return "redirect:/course/" + courseCode + "/ownExams";
+        }
+
         model.addAttribute("course", course);
         model.addAttribute("exam", exam);
         return "edit-exam";
@@ -57,6 +68,15 @@ public class ExamController {
                              @PathVariable String examCode,
                              RedirectAttributes redirectAttributes) {
         Exam exam = examService.findByExamCode(examCode);
+
+        if (exam.getStartDate().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "بعد از برگزاری آزمون امکان ویرایش یا حذف آزمون وجود ندارد"
+            );
+            return "redirect:/course/" + courseCode + "/ownExams";
+        }
+
         examService.delete(exam);
         redirectAttributes.addFlashAttribute("examDeleteSuccess", "آزمون: " + exam.getExamCode() + " با موفقیت حذف شد");
         return "redirect:/course/" + courseCode + "/ownExams";
