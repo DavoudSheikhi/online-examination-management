@@ -24,6 +24,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final ExamRepository examRepository;
     private final ExamQuestionRepository examQuestionRepository;
     private final OptionRepository optionRepository;
+    private final ExamOptionRepository examOptionRepository;
 
     @Override
     public Question findByTitle(String title) {
@@ -58,8 +59,12 @@ public class QuestionServiceImpl implements QuestionService {
         Question saved = questionRepository.save(descriptiveQuestion);
 
         Exam exam = examRepository.findByExamCode(examCode);
-        ExamQuestion examQuestion = ExamQuestion.builder()
-                .question(saved)
+        ExamDescriptiveQuestion examQuestion = ExamDescriptiveQuestion.builder()
+                .title(saved.getTitle())
+                .text(saved.getText())
+                .questionType(saved.getQuestionType())
+                .creator(saved.getCreator())
+                .creatorUsername(saved.getCreatorUsername())
                 .exam(exam)
                 .score(Double.valueOf(score))
                 .build();
@@ -79,6 +84,7 @@ public class QuestionServiceImpl implements QuestionService {
             options.add(option);
         }
         Option correctOption = options.get(dto.correctOption());
+
         MultipleChoiceQuestion choiceQuestion = MultipleChoiceQuestion.builder()
                 .title(dto.title())
                 .text(dto.text())
@@ -91,11 +97,27 @@ public class QuestionServiceImpl implements QuestionService {
                 .build();
         Question saved = questionRepository.save(choiceQuestion);
 
+        List<ExamOption> examOptions = new ArrayList<>();
+        for (OptionDto dtoOption : dto.options()) {
+            ExamOption examOption = new ExamOption();
+            examOption.setText(dtoOption.text());
+            examOptionRepository.save(examOption);
+            examOptions.add(examOption);
+        }
+        ExamOption correctExamOption = examOptions.get(dto.correctOption());
+
+
         Exam exam = examRepository.findByExamCode(examCode);
-        ExamQuestion examQuestion = ExamQuestion.builder()
-                .question(saved)
+        ExamMultipleChoiceQuestion examQuestion = ExamMultipleChoiceQuestion.builder()
+                .title(dto.title())
+                .text(dto.text())
+                .questionType(QuestionType.MULTIPLE_CHOICE)
+                .creator(teacher)
+                .creatorUsername(teacher.getUsername())
                 .exam(exam)
                 .score(Double.valueOf(dto.score()))
+                .examOptions(examOptions)
+                .correctExamOption(correctExamOption)
                 .build();
 
         examQuestionRepository.save(examQuestion);

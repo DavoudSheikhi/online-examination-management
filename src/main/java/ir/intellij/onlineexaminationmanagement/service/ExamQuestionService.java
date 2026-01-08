@@ -8,4 +8,6 @@ public interface ExamQuestionService {
     List<ExamQuestion> findExamQuestions(String examCode);
 
     ExamQuestion save(ExamQuestion examQuestion);
+
+    void addExamQuestionFromBank(String examCode, String questionTitle, Double score);
 }
