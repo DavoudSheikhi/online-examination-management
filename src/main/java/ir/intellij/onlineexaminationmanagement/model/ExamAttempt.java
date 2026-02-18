@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 
 @Entity
 @Table(
@@ -28,13 +29,11 @@ public class ExamAttempt extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Exam exam;
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User student;
-
-    private LocalDateTime startedAt;
-    private LocalDateTime endsAt;
-    private LocalDateTime submittedAt;
+    private Instant startedAt;
+    private Instant endsAt;
+    private Instant submittedAt;
 
     @Enumerated(EnumType.STRING)
     private ExamAttemptStatus status;
