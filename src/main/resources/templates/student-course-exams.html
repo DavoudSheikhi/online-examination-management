@@ -103,13 +103,9 @@
         <td th:text="${exam.creatorUsername}"></td>
         <td th:text="${exam.description}"></td>
         <td>
-            <div class="d-flex justify-content-center gap-2">
-
-                <a th:href="@{/student/{code}/exams(code=${courseCode})}"
-                   class="btn btn-sm btn-success">
-                    شروع آزمون
-                </a>
-            </div>
+            <form th:action="@{/student/exam/{examCode}/start(examCode=${exam.examCode})}" method="post">
+                <button type="submit">شروع آزمون</button>
+            </form>
         </td>
 
     </tr>
