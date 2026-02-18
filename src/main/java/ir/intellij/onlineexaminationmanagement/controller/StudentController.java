@@ -2,9 +2,11 @@ package ir.intellij.onlineexaminationmanagement.controller;
 
 import ir.intellij.onlineexaminationmanagement.model.Course;
 import ir.intellij.onlineexaminationmanagement.model.Exam;
+import ir.intellij.onlineexaminationmanagement.model.ExamAttempt;
 import ir.intellij.onlineexaminationmanagement.model.User;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
+import ir.intellij.onlineexaminationmanagement.service.ExamAttemptService;
 import ir.intellij.onlineexaminationmanagement.service.ExamService;
 import ir.intellij.onlineexaminationmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -25,6 +28,7 @@ public class StudentController {
     private final CourseService courseService;
     private final UserService userService;
     private final ExamService examService;
+    private final ExamAttemptService examAttemptService;
 
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping("/courses")
@@ -47,5 +51,13 @@ public class StudentController {
         model.addAttribute("exams", exams);
         model.addAttribute("courseCode", courseCode);
         return "student-course-exams";
+    }
+
+    @PreAuthorize("hasRole('STUDENT')")
+    @PostMapping("/exam/{examCode}/start")
+    public String startExam(@AuthenticationPrincipal CustomUserDetails user,
+                            @PathVariable String examCode){
+        ExamAttempt attempt = examAttemptService.startOrResumeAttempt(examCode, user.getUsername());
+        return "redirect:/student/attempt/" + attempt.getId();
     }
 }
