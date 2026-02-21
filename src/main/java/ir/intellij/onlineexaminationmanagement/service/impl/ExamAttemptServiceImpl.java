@@ -7,6 +7,7 @@ import ir.intellij.onlineexaminationmanagement.repository.ExamRepository;
 import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
 import ir.intellij.onlineexaminationmanagement.service.ExamAttemptService;
 import ir.intellij.onlineexaminationmanagement.service.ExamQuestionService;
+import ir.intellij.onlineexaminationmanagement.service.ScoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
     private final ExamAttemptRepository examAttemptRepository;
     private final ExamQuestionService examQuestionService;
     private final AttemptAnswerRepository attemptAnswerRepository;
+    private final ScoreService scoreService;
 
     @Override
     @Transactional
@@ -66,11 +68,51 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
 
                     return savedAttempt;
                 });
+
+
+        Instant now = Instant.now();
+        expireIfNeededAndFinalize(attempt, now);
+        if (attempt.getStatus() == ExamAttemptStatus.IN_PROGRESS) {
+            return examAttemptRepository.save(attempt);
+        }
+        throw new IllegalStateException("بعد از تمام شدن زمان آزمون یا ثبت نهایی، امکان آزمون مجدد وجود ندارد");
+    }
+
+    @Override
+    @Transactional
+    public long getRemainingSeconds(Long attemptId, String studentUsername) {
+        ExamAttempt attempt = findAttemptForStudent(attemptId, studentUsername);
+        Instant now = Instant.now();
+        expireIfNeededAndFinalize(attempt, now);
+        examAttemptRepository.save(attempt);
+        return Math.max(0, Duration.between(now, attempt.getEndsAt()).getSeconds());
+    }
+
+    @Override
+    public ExamAttempt findAttemptForStudent(Long attemptId, String studentUsername) {
+        ExamAttempt attempt = examAttemptRepository.findById(attemptId)
+                .orElseThrow(() -> new IllegalArgumentException("Attempt not found: " + attemptId));
+
+        if (attempt.getStudent() == null || attempt.getStudent().getUsername() == null
+                || !attempt.getStudent().getUsername().equals(studentUsername)) {
+            throw new IllegalStateException("Access denied");
+        }
         return attempt;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<AttemptAnswer> getAttemptAnswers(Long attemptId, String studentUsername) {
+        findAttemptForStudent(attemptId, studentUsername);
+        return attemptAnswerRepository.findAllByAttemptIdWithQuestion(attemptId);
+    }
 
-
-
-
+    private void expireIfNeededAndFinalize(ExamAttempt attempt, Instant now) {
+        if (attempt.getStatus() == ExamAttemptStatus.IN_PROGRESS && !now.isBefore(attempt.getEndsAt())) {
+            attempt.setStatus(ExamAttemptStatus.TIME_EXPIRED);
+            attempt.setSubmittedAt(now);
+            ExamAttempt saved = examAttemptRepository.save(attempt);
+            scoreService.finalizeAutoScoring(saved);
+        }
+    }
 }
