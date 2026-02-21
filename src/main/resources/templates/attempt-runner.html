@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>برگزاری آزمون</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f4f6f9; font-family: sans-serif; }
+        .card { border-radius: 14px; }
+        .timer { font-weight: 700; font-size: 1.1rem; }
+        .question-card { display: none; }
+        .question-card.active { display: block; }
+        .muted { color: #6c757d; }
+    </style>
+</head>
+<body>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <div class="muted">کد آزمون: <span th:text="${examCode}"></span></div>
+            <div class="muted">کد درس: <span th:text="${courseCode}"></span></div>
+        </div>
+        <div class="timer">
+            زمان باقی‌مانده: <span id="timerText">--:--</span>
+        </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+        <div class="d-flex gap-2 flex-wrap" id="navButtons">
+            <button type="button" class="btn btn-outline-secondary btn-sm"
+                    th:each="q, stat : ${questions}"
+                    th:attr="data-index=${stat.index}"
+                    th:text="${stat.index + 1}"
+                    onclick="goToIndex(parseInt(this.getAttribute('data-index')))"></button>
+        </div>
+        <div class="muted mt-2">
+            می‌توانید بین سوالات جابجا شوید. پاسخ‌ها به‌صورت خودکار ذخیره می‌شوند.
+        </div>
+    </div>
+
+    <div th:each="q, stat : ${questions}"
+         th:class="'card p-4 mb-3 question-card ' + (${stat.index} == 0 ? 'active' : '')"
+         th:attr="data-index=${stat.index},data-question-id=${q.examQuestionId},data-question-type=${q.questionType}">
+        <div class="d-flex justify-content-between align-items-start">
+            <h5 class="mb-2">
+                سوال <span th:text="${stat.index + 1}"></span>:
+                <span th:text="${q.title}"></span>
+            </h5>
+            <div class="muted">نمره: <span th:text="${q.maxScore}"></span></div>
+        </div>
+
+        <p class="mb-3" th:text="${q.text}"></p>
+
+        <!-- Multiple choice -->
+        <div th:if="${q.questionType.name() == 'MULTIPLE_CHOICE'}">
+            <div class="form-check mb-2" th:each="opt : ${q.options}">
+                <input class="form-check-input"
+                       type="radio"
+                       th:name="${'mcq-' + q.examQuestionId}"
+                       th:value="${opt.id}"
+                       th:checked="${q.selectedExamOptionId != null and q.selectedExamOptionId == opt.id}">
+                <label class="form-check-label" th:text="${opt.text}"></label>
+            </div>
+        </div>
+
+        <!-- Descriptive -->
+        <div th:if="${q.questionType.name() == 'DESCRIPTIVE'}">
+            <label class="form-label">پاسخ تشریحی</label>
+            <textarea class="form-control"
+                      rows="6"
+                      th:name="${'desc-' + q.examQuestionId}"
+                      th:text="${q.descriptiveText}"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-secondary" onclick="prevQuestion()">قبلی</button>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary" onclick="saveCurrent()">ذخیره</button>
+                <button type="button" class="btn btn-primary" onclick="nextQuestion()">بعدی</button>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/student/attempt/{attemptId}/submit(attemptId=${attemptId})}" method="post">
+        <button type="submit" class="btn btn-success w-100">ثبت نهایی آزمون</button>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    const attemptId = /*[[${attemptId}]]*/ 0;
+    let remainingSeconds = /*[[${remainingSeconds}]]*/ 0;
+    let currentIndex = 0;
+    let timerHandle = null;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function renderTimer() {
+        const m = Math.floor(remainingSeconds / 60);
+        const s = remainingSeconds % 60;
+        document.getElementById('timerText').textContent = `${pad(m)}:${pad(s)}`;
+    }
+
+    function disableAllInputs() {
+        document.querySelectorAll('input, textarea, button').forEach(el => {
+            if (el.type !== 'submit') el.disabled = true;
+        });
+    }
+
+    async function heartbeat() {
+        const res = await fetch(`/student/attempt/${attemptId}/heartbeat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        remainingSeconds = data.remainingSeconds;
+    }
+
+    function startTimer() {
+        renderTimer();
+        timerHandle = setInterval(async () => {
+            remainingSeconds = Math.max(0, remainingSeconds - 1);
+            renderTimer();
+            if (remainingSeconds % 15 === 0) {
+                await heartbeat();
+            }
+            if (remainingSeconds <= 0) {
+                clearInterval(timerHandle);
+                disableAllInputs();
+                // Best-effort auto-submit; server will enforce TIME_EXPIRED anyway.
+                fetch(`/student/attempt/${attemptId}/submit`, { method: 'POST' });
+            }
+        }, 1000);
+    }
+
+    function showIndex(index) {
+        const cards = document.querySelectorAll('.question-card');
+        cards.forEach(c => c.classList.remove('active'));
+        const card = document.querySelector(`.question-card[data-index="${index}"]`);
+        if (card) card.classList.add('active');
+        currentIndex = index;
+    }
+
+    function goToIndex(index) {
+        saveCurrent().finally(() => showIndex(index));
+    }
+
+    function prevQuestion() {
+        if (currentIndex <= 0) return;
+        goToIndex(currentIndex - 1);
+    }
+
+    function nextQuestion() {
+        const total = document.querySelectorAll('.question-card').length;
+        if (currentIndex >= total - 1) return;
+        goToIndex(currentIndex + 1);
+    }
+
+    function getCurrentPayload() {
+        const card = document.querySelector(`.question-card[data-index="${currentIndex}"]`);
+        const questionId = parseInt(card.getAttribute('data-question-id'));
+        const qType = card.getAttribute('data-question-type');
+        if (qType === 'MULTIPLE_CHOICE') {
+            const checked = card.querySelector(`input[type="radio"][name="mcq-${questionId}"]:checked`);
+            return { examQuestionId: questionId, selectedExamOptionId: checked ? parseInt(checked.value) : null, descriptiveText: null };
+        } else {
+            const ta = card.querySelector(`textarea[name="desc-${questionId}"]`);
+            return { examQuestionId: questionId, selectedExamOptionId: null, descriptiveText: ta ? ta.value : "" };
+        }
+    }
+
+    async function saveCurrent() {
+        if (remainingSeconds <= 0) return;
+        const payload = getCurrentPayload();
+        const res = await fetch(`/student/attempt/${attemptId}/answer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+            const data = await res.json();
+            remainingSeconds = data.remainingSeconds;
+            renderTimer();
+        }
+    }
+
+    startTimer();
+
+    if (remainingSeconds <= 0) {
+        renderTimer();
+        disableAllInputs();
+    }
+</script>
+
+</body>
+</html>
+
