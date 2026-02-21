@@ -1,9 +1,7 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
-import ir.intellij.onlineexaminationmanagement.model.Course;
-import ir.intellij.onlineexaminationmanagement.model.Exam;
-import ir.intellij.onlineexaminationmanagement.model.ExamAttempt;
-import ir.intellij.onlineexaminationmanagement.model.User;
+import ir.intellij.onlineexaminationmanagement.dto.attempt.AttemptQuestionView;
+import ir.intellij.onlineexaminationmanagement.model.*;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
 import ir.intellij.onlineexaminationmanagement.service.ExamAttemptService;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -56,8 +55,60 @@ public class StudentController {
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping("/exam/{examCode}/start")
     public String startExam(@AuthenticationPrincipal CustomUserDetails user,
-                            @PathVariable String examCode){
+                            @PathVariable String examCode) {
         ExamAttempt attempt = examAttemptService.startOrResumeAttempt(examCode, user.getUsername());
         return "redirect:/student/attempt/" + attempt.getId();
+    }
+
+    @PreAuthorize("hasRole('STUDENT')")
+    @GetMapping("/attempt/{attemptId}")
+    public String attemptRunner(@AuthenticationPrincipal CustomUserDetails user,
+                                @PathVariable Long attemptId,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
+
+        long remainingSeconds = examAttemptService.getRemainingSeconds(attemptId, user.getUsername());
+
+        ExamAttempt attempt = examAttemptService.findAttemptForStudent(attemptId, user.getUsername());
+        if (remainingSeconds <= 0 || attempt.getStatus() != ExamAttemptStatus.IN_PROGRESS) {
+            redirectAttributes.addFlashAttribute("examClosed", "زمان آزمون به پایان رسیده یا آزمون قبلا ثبت شده است.");
+            return "redirect:/student/" + attempt.getExam().getCourse().getCourseCode() + "/exams";
+        }
+        List<AttemptAnswer> answers = examAttemptService.getAttemptAnswers(attemptId, user.getUsername());
+
+        List<AttemptQuestionView> questions = answers.stream()
+                .map(a -> toQuestionView(a))
+                .toList();
+
+        model.addAttribute("attemptId", attemptId);
+        model.addAttribute("examCode", attempt.getExam().getExamCode());
+        model.addAttribute("courseCode", attempt.getExam().getCourse().getCourseCode());
+        model.addAttribute("remainingSeconds", remainingSeconds);
+        model.addAttribute("questions", questions);
+        return "attempt-runner";
+    }
+
+
+
+    private AttemptQuestionView toQuestionView(AttemptAnswer a) {
+        ExamQuestion q = a.getExamQuestion();
+        List<AttemptQuestionView.OptionView> options = List.of();
+        if (q instanceof ExamMultipleChoiceQuestion mcq) {
+            options = mcq.getExamOptions().stream()
+                    .map(o -> new AttemptQuestionView.OptionView(o.getId(), o.getText()))
+                    .toList();
+        }
+        Long selectedOptionId = a.getSelectedExamOption() == null ? null : a.getSelectedExamOption().getId();
+        return new AttemptQuestionView(
+                a.getId(),
+                q.getId(),
+                q.getTitle(),
+                q.getText(),
+                q.getQuestionType(),
+                q.getScore(),
+                options,
+                selectedOptionId,
+                a.getDescriptiveText()
+        );
     }
 }
