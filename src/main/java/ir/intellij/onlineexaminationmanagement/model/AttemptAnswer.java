@@ -42,9 +42,9 @@ public class AttemptAnswer extends BaseModel {
     @Column(length = 2000)
     private String descriptiveText;
 
-    private Instant answeredAt;
+//    private Instant answeredAt;
 
-    private Instant lastUpdatedAt;
+//    private Instant lastUpdatedAt;
 
     @Column(nullable = false)
     private Double autoScore = 0d;
