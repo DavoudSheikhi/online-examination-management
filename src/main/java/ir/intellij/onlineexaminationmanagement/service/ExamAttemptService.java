@@ -14,4 +14,11 @@ public interface ExamAttemptService {
     ExamAttempt findAttemptForStudent(Long attemptId, String studentUsername);
 
     List<AttemptAnswer> getAttemptAnswers(Long attemptId, String studentUsername);
+
+    void autosaveAnswer(Long attemptId,
+                        String studentUsername,
+                        Long examQuestionId,
+                        Long selectedExamOptionId,
+                        String descriptiveText);
+
 }

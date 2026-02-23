@@ -1,6 +1,7 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
 import ir.intellij.onlineexaminationmanagement.dto.attempt.AttemptQuestionView;
+import ir.intellij.onlineexaminationmanagement.dto.attempt.AttemptSaveAnswerRequest;
 import ir.intellij.onlineexaminationmanagement.model.*;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
@@ -12,10 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -86,6 +84,32 @@ public class StudentController {
         model.addAttribute("remainingSeconds", remainingSeconds);
         model.addAttribute("questions", questions);
         return "attempt-runner";
+    }
+
+    @PreAuthorize("hasRole('STUDENT')")
+    @ResponseBody
+    @PostMapping("/attempt/{attemptId}/answer")
+    public AttemptQuestionView.SaveResponse autosaveAnswer(@AuthenticationPrincipal CustomUserDetails user,
+                                                           @PathVariable Long attemptId,
+                                                           @RequestBody AttemptSaveAnswerRequest request) {
+        examAttemptService.autosaveAnswer(
+                attemptId,
+                user.getUsername(),
+                request.examQuestionId(),
+                request.selectedExamOptionId(),
+                request.descriptiveText()
+        );
+        long remainingSeconds = examAttemptService.getRemainingSeconds(attemptId, user.getUsername());
+        return new AttemptQuestionView.SaveResponse(true, remainingSeconds);
+    }
+
+    @PreAuthorize("hasRole('STUDENT')")
+    @ResponseBody
+    @PostMapping("/attempt/{attemptId}/heartbeat")
+    public AttemptQuestionView.SaveResponse heartbeat(@AuthenticationPrincipal CustomUserDetails user,
+                                                      @PathVariable Long attemptId) {
+        long remainingSeconds = examAttemptService.getRemainingSeconds(attemptId, user.getUsername());
+        return new AttemptQuestionView.SaveResponse(true, remainingSeconds);
     }
 
 

@@ -1,10 +1,7 @@
 package ir.intellij.onlineexaminationmanagement.service.impl;
 
 import ir.intellij.onlineexaminationmanagement.model.*;
-import ir.intellij.onlineexaminationmanagement.repository.AttemptAnswerRepository;
-import ir.intellij.onlineexaminationmanagement.repository.ExamAttemptRepository;
-import ir.intellij.onlineexaminationmanagement.repository.ExamRepository;
-import ir.intellij.onlineexaminationmanagement.repository.UserRepository;
+import ir.intellij.onlineexaminationmanagement.repository.*;
 import ir.intellij.onlineexaminationmanagement.service.ExamAttemptService;
 import ir.intellij.onlineexaminationmanagement.service.ExamQuestionService;
 import ir.intellij.onlineexaminationmanagement.service.ScoreService;
@@ -25,6 +22,8 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
     private final ExamQuestionService examQuestionService;
     private final AttemptAnswerRepository attemptAnswerRepository;
     private final ScoreService scoreService;
+    private final ExamOptionRepository examOptionRepository;
+
 
     @Override
     @Transactional
@@ -105,6 +104,42 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
     public List<AttemptAnswer> getAttemptAnswers(Long attemptId, String studentUsername) {
         findAttemptForStudent(attemptId, studentUsername);
         return attemptAnswerRepository.findAllByAttemptIdWithQuestion(attemptId);
+    }
+
+    @Override
+    @Transactional
+    public void autosaveAnswer(Long attemptId,
+                               String studentUsername,
+                               Long examQuestionId,
+                               Long selectedExamOptionId,
+                               String descriptiveText) {
+        ExamAttempt attempt = findAttemptForStudent(attemptId, studentUsername);
+        Instant now = Instant.now();
+        expireIfNeededAndFinalize(attempt, now);
+        if (attempt.getStatus() != ExamAttemptStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Attempt is not in progress");
+        }
+        if (!now.isBefore(attempt.getEndsAt())) {
+            throw new IllegalStateException("Time is over");
+        }
+
+        AttemptAnswer answer = attemptAnswerRepository.findByAttempt_IdAndExamQuestion_Id(attemptId, examQuestionId)
+                .orElseThrow(() -> new IllegalArgumentException("Answer not found"));
+
+        if (selectedExamOptionId != null) {
+            ExamOption selected = examOptionRepository.findById(selectedExamOptionId)
+                    .orElseThrow(() -> new IllegalArgumentException("Selected option not found"));
+            answer.setSelectedExamOption(selected);
+            answer.setDescriptiveText(null);
+        } else if (descriptiveText != null) {
+            answer.setDescriptiveText(descriptiveText);
+            answer.setSelectedExamOption(null);
+        }
+
+//        answer.setAnsweredAt(answer.getAnsweredAt() == null ? now : answer.getAnsweredAt());
+//        answer.setLastUpdatedAt(now);
+        attemptAnswerRepository.save(answer);
+        examAttemptRepository.save(attempt);
     }
 
     private void expireIfNeededAndFinalize(ExamAttempt attempt, Instant now) {
