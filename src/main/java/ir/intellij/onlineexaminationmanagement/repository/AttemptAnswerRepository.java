@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AttemptAnswerRepository extends JpaRepository<AttemptAnswer, Long> {
 
@@ -18,4 +19,6 @@ public interface AttemptAnswerRepository extends JpaRepository<AttemptAnswer, Lo
             order by q.id asc
             """)
     List<AttemptAnswer> findAllByAttemptIdWithQuestion(@Param("attemptId") Long attemptId);
+
+    Optional<AttemptAnswer> findByAttempt_IdAndExamQuestion_Id(Long attemptId, Long examQuestionId);
 }
