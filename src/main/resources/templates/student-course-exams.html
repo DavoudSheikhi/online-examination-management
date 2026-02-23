@@ -81,6 +81,10 @@
     </a>
 </div>
 
+<div th:if="${examError}" style="color:red; margin:10px 0;">
+    <span th:text="${examError}"></span>
+</div>
+
 <div th:if="${examClosed}" style="color:red; margin:10px 0;">
     <span th:text="${examClosed}"></span>
 </div>

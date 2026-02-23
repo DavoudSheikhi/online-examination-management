@@ -53,9 +53,17 @@ public class StudentController {
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping("/exam/{examCode}/start")
     public String startExam(@AuthenticationPrincipal CustomUserDetails user,
-                            @PathVariable String examCode) {
-        ExamAttempt attempt = examAttemptService.startOrResumeAttempt(examCode, user.getUsername());
-        return "redirect:/student/attempt/" + attempt.getId();
+                            @PathVariable String examCode,
+                            RedirectAttributes redirectAttributes) {
+        Exam exam = examService.findByExamCode(examCode);
+        String courseCode = exam.getCourse().getCourseCode();
+        try {
+            ExamAttempt attempt = examAttemptService.startOrResumeAttempt(examCode, user.getUsername());
+            return "redirect:/student/attempt/" + attempt.getId();
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("examError", e.getMessage());
+            return "redirect:/student/" + courseCode + "/exams";
+        }
     }
 
     @PreAuthorize("hasRole('STUDENT')")
@@ -111,7 +119,6 @@ public class StudentController {
         long remainingSeconds = examAttemptService.getRemainingSeconds(attemptId, user.getUsername());
         return new AttemptQuestionView.SaveResponse(true, remainingSeconds);
     }
-
 
 
     private AttemptQuestionView toQuestionView(AttemptAnswer a) {
