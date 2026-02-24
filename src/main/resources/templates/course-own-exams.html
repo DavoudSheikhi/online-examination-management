@@ -74,6 +74,11 @@
                                 ✏ ویرایش
                             </a>
 
+                            <a th:href="@{'/teacher/course/' + ${course.courseCode} + '/exam/' + ${exam.examCode} + '/attempts'}"
+                               class="btn btn-sm btn-success">
+                                📊 نتایج
+                            </a>
+
                             <a th:href="@{'/course/' + ${course.courseCode} + '/exams/delete/' + ${exam.examCode}}"
                                class="btn btn-sm btn-danger"
                                onclick="return confirm('آیا از حذف این آزمون مطمئن هستید؟');">
