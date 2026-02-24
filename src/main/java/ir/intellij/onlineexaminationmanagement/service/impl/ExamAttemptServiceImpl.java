@@ -135,11 +135,26 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
             answer.setDescriptiveText(descriptiveText);
             answer.setSelectedExamOption(null);
         }
-
-//        answer.setAnsweredAt(answer.getAnsweredAt() == null ? now : answer.getAnsweredAt());
-//        answer.setLastUpdatedAt(now);
         attemptAnswerRepository.save(answer);
         examAttemptRepository.save(attempt);
+    }
+
+    @Override
+    @Transactional
+    public ExamAttempt submitAttempt(Long attemptId, String studentUsername) {
+        ExamAttempt attempt = findAttemptForStudent(attemptId, studentUsername);
+        Instant now = Instant.now();
+        expireIfNeededAndFinalize(attempt, now);
+
+        if (attempt.getStatus() != ExamAttemptStatus.IN_PROGRESS) {
+            return attempt; // idempotent
+        }
+
+        attempt.setStatus(ExamAttemptStatus.SUBMITTED);
+        attempt.setSubmittedAt(now);
+        ExamAttempt saved = examAttemptRepository.save(attempt);
+        scoreService.finalizeAutoScoring(saved);
+        return saved;
     }
 
     private void expireIfNeededAndFinalize(ExamAttempt attempt, Instant now) {

@@ -120,6 +120,16 @@ public class StudentController {
         return new AttemptQuestionView.SaveResponse(true, remainingSeconds);
     }
 
+    @PreAuthorize("hasRole('STUDENT')")
+    @PostMapping("/attempt/{attemptId}/submit")
+    public String submit(@AuthenticationPrincipal CustomUserDetails user,
+                         @PathVariable Long attemptId,
+                         RedirectAttributes redirectAttributes) {
+        ExamAttempt attempt = examAttemptService.submitAttempt(attemptId, user.getUsername());
+        redirectAttributes.addFlashAttribute("submitSuccess",
+                "آزمون با موفقیت ثبت شد (" + attempt.getStatus().name() + ")");
+        return "redirect:/student/" + attempt.getExam().getCourse().getCourseCode() + "/exams";
+    }
 
     private AttemptQuestionView toQuestionView(AttemptAnswer a) {
         ExamQuestion q = a.getExamQuestion();
@@ -142,4 +152,6 @@ public class StudentController {
                 a.getDescriptiveText()
         );
     }
+
+
 }

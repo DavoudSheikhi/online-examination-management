@@ -21,4 +21,5 @@ public interface ExamAttemptService {
                         Long selectedExamOptionId,
                         String descriptiveText);
 
+    ExamAttempt submitAttempt(Long attemptId, String studentUsername);
 }

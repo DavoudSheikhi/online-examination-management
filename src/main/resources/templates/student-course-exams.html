@@ -89,6 +89,10 @@
     <span th:text="${examClosed}"></span>
 </div>
 
+<div th:if="${submitSuccess}" style="color:red; margin:10px 0;">
+    <span th:text="${submitSuccess}"></span>
+</div>
+
 <!-- 📋 جدول آزمون‌ها -->
 <table>
     <thead>
