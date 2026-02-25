@@ -1,9 +1,7 @@
 package ir.intellij.onlineexaminationmanagement.controller;
 
-import ir.intellij.onlineexaminationmanagement.model.Course;
-import ir.intellij.onlineexaminationmanagement.model.ExamAttempt;
-import ir.intellij.onlineexaminationmanagement.model.ExamAttemptStatus;
-import ir.intellij.onlineexaminationmanagement.model.User;
+import ir.intellij.onlineexaminationmanagement.model.*;
+import ir.intellij.onlineexaminationmanagement.repository.AttemptAnswerRepository;
 import ir.intellij.onlineexaminationmanagement.repository.ExamAttemptRepository;
 import ir.intellij.onlineexaminationmanagement.security.CustomUserDetails;
 import ir.intellij.onlineexaminationmanagement.service.CourseService;
@@ -29,6 +27,7 @@ public class TeacherController {
     private final UserService userService;
     private final ExamAttemptRepository examAttemptRepository;
     private final ScoreService scoreService;
+    private final AttemptAnswerRepository attemptAnswerRepository;
 
     @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/courses")
@@ -63,5 +62,21 @@ public class TeacherController {
         model.addAttribute("courseCode", courseCode);
         model.addAttribute("examCode", examCode);
         return "exam-attempts";
+    }
+
+    @PreAuthorize("hasRole('TEACHER')")
+    @GetMapping("/attempt/{attemptId}")
+    public String attemptDetail(@AuthenticationPrincipal CustomUserDetails teacher,
+                                @PathVariable Long attemptId,
+                                Model model) {
+        ExamAttempt attempt = examAttemptRepository.findById(attemptId)
+                .orElseThrow(() -> new IllegalArgumentException("Attempt not found: " + attemptId));
+
+        scoreService.finalizeAutoScoring(attempt);
+
+        List<AttemptAnswer> answers = attemptAnswerRepository.findAllByAttemptIdWithQuestion(attemptId);
+        model.addAttribute("attempt", attempt);
+        model.addAttribute("answers", answers);
+        return "attempt-detail-grade";
     }
 }
