@@ -34,7 +34,6 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
         ExamAttempt attempt = examAttemptRepository
                 .findByExam_ExamCodeAndStudent_Username(examCode, studentUsername)
                 .orElseGet(() -> {
-
                     Instant now = Instant.now();
                     Instant endsAt = now.plus(Duration.ofMinutes(exam.getDurationInMinutes()));
 
@@ -64,10 +63,8 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
                             .toList();
 
                     attemptAnswerRepository.saveAll(answers);
-
                     return savedAttempt;
                 });
-
 
         Instant now = Instant.now();
         expireIfNeededAndFinalize(attempt, now);
@@ -147,7 +144,7 @@ public class ExamAttemptServiceImpl implements ExamAttemptService {
         expireIfNeededAndFinalize(attempt, now);
 
         if (attempt.getStatus() != ExamAttemptStatus.IN_PROGRESS) {
-            return attempt; // idempotent
+            return attempt;
         }
 
         attempt.setStatus(ExamAttemptStatus.SUBMITTED);
