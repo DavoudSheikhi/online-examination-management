@@ -12,9 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Instant;
 import java.util.List;
@@ -78,5 +77,20 @@ public class TeacherController {
         model.addAttribute("attempt", attempt);
         model.addAttribute("answers", answers);
         return "attempt-detail-grade";
+    }
+
+    @PreAuthorize("hasRole('TEACHER')")
+    @PostMapping("/attempt-answer/{attemptAnswerId}/score")
+    public String scoreDescriptive(@AuthenticationPrincipal CustomUserDetails teacher,
+                                   @PathVariable Long attemptAnswerId,
+                                   @RequestParam("score") double score,
+                                   RedirectAttributes redirectAttributes) {
+        AttemptAnswer aa = attemptAnswerRepository.findById(attemptAnswerId)
+                .orElseThrow(() -> new IllegalArgumentException("Answer not found: " + attemptAnswerId));
+        Long attemptId = aa.getAttempt() == null ? null : aa.getAttempt().getId();
+
+        scoreService.setManualScore(attemptAnswerId, score, teacher.getUsername());
+        redirectAttributes.addFlashAttribute("scoreSaved", "نمره ثبت شد");
+        return "redirect:/teacher/attempt/" + attemptId;
     }
 }

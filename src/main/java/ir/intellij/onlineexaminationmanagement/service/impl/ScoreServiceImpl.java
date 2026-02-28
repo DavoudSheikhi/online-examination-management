@@ -51,4 +51,38 @@ public class ScoreServiceImpl implements ScoreService {
         attempt.setTotalScore(autoTotal + manualTotal);
         examAttemptRepository.save(attempt);
     }
+
+    @Override
+    @Transactional
+    public void setManualScore(Long attemptAnswerId, double manualScore, String teacherUsername) {
+        AttemptAnswer aa = attemptAnswerRepository.findById(attemptAnswerId)
+                .orElseThrow(() -> new IllegalArgumentException("Answer not found: " + attemptAnswerId));
+
+        ExamAttempt attempt = aa.getAttempt();
+        if (!attempt.getExam().getCreatedBy().getUsername().equals(teacherUsername)) {
+            throw new IllegalStateException("Access denied");
+        }
+
+        ExamQuestion q = aa.getExamQuestion();
+        double max = (q == null || q.getScore() == null) ? 0d : q.getScore();
+        if (manualScore < 0 || manualScore > max) {
+            throw new IllegalArgumentException("Manual score must be between 0 and " + max);
+        }
+
+        aa.setManualScore(manualScore);
+        aa.setFinalScore((aa.getAutoScore() == null ? 0d : aa.getAutoScore()) + manualScore);
+        attemptAnswerRepository.save(aa);
+
+        List<AttemptAnswer> answers = attemptAnswerRepository.findAllByAttemptIdWithQuestion(attempt.getId());
+        double autoTotal = 0d;
+        double manualTotal = 0d;
+        for (AttemptAnswer a : answers) {
+            autoTotal += a.getAutoScore() == null ? 0d : a.getAutoScore();
+            manualTotal += a.getManualScore() == null ? 0d : a.getManualScore();
+        }
+        attempt.setTotalAutoScore(autoTotal);
+        attempt.setTotalManualScore(manualTotal);
+        attempt.setTotalScore(autoTotal + manualTotal);
+        examAttemptRepository.save(attempt);
+    }
 }

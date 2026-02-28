@@ -6,5 +6,6 @@ public interface ScoreService {
 
     void finalizeAutoScoring(ExamAttempt attempt);
 
+    void setManualScore(Long attemptAnswerId, double manualScore, String teacherUsername);
 }
 
