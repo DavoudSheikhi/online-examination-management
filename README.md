@@ -6,6 +6,16 @@ A web-based application for creating, managing, and conducting online examinatio
 
 This project was developed as a comprehensive educational platform where administrators, teachers, and students can interact through a role-based system to manage courses, exams, question banks, and grading processes.
 
+## Project Highlights
+
+- Role-based system (Admin, Teacher, Student)
+- Layered architecture (Controller, Service, Repository)
+- DTO pattern for clean separation of layers
+- Spring Security for authentication and authorization
+- Dynamic exam system with timer-based execution
+- Question bank reusable across multiple exams
+- Automatic and manual grading system
+
 ## Features
 
 ### User Management
@@ -209,4 +219,4 @@ Main entities include:
 Davoud Sheikhi
 
 GitHub:
-https://github.com/DavoudSheikhi
+https://github.com/DavoudSheikhi/online-examination-management
