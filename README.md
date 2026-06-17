@@ -1,4 +1,6 @@
-# Online Examination Management System
+# Online Examination Management System 
+
+![Admin Dashboard](screenshots/Manage-dashboard.png)
 
 A web-based application for creating, managing, and conducting online examinations.
 
