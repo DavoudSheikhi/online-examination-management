@@ -175,8 +175,33 @@ Main entities include:
 
 ## Screenshots
 
-Screenshots will be added soon.
+### Login Page
 
+![Login Page](screenshots/login-page.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](screenshots/Manage-dashboard.png)
+
+### User Management
+
+![User Management](screenshots/pending-users.png)
+
+### Course Management
+
+![Course Management](screenshots/Course-management.png)
+
+### Exam Creation
+
+![Exam Creation](screenshots/Exam-creation-by-teacher.png)
+
+### Exam Participation
+
+![Exam Participation](screenshots/Exam-in-progress.png)
+
+### Grading Page
+
+![Grading Page](screenshots/Grading-page.png)
 ## Author
 
 Davoud Sheikhi
